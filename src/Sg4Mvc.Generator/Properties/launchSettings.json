@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Run on AspNetSimple": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\..\\samples\\AspNetSimple\\AspNetSimple.csproj"
+    },
+    "Run on AspNetFeatureFolders": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\..\\samples\\AspNetFeatureFolders\\AspNetFeatureFolders.csproj"
+    }
+  }
+}

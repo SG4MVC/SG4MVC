@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<TargetFramework>net6.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Pages\NoDirectChildPages\AnotherEmptyLayer\NestedPages\Index.cshtml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Remove="Pages\NoDirectChildPages\AnotherEmptyLayer\NestedPages\Index.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
+		<ProjectReference Include="..\..\src\Sg4Mvc\Sg4Mvc.csproj" />
+		<ProjectReference Include="..\SampleModels\SampleModels.csproj" />
+		<ProjectReference Include="..\..\src\Sg4Mvc.Generator\Sg4Mvc.Generator.csproj" 
+		                  OutputItemType="Analyzer" 
+		                  ReferenceOutputAssembly="true" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Pages\NoDirectChildPages\AnotherEmptyLayer\NestedPages\" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	</PropertyGroup>
+
+</Project>
