@@ -1,6 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Sg4Mvc;
+
+[assembly: GenerateSg4Mvc]
 
 namespace AspNetFeatureFolders;
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Microsoft.AspNetCore.Mvc;
 
-public static class T4Extensions
+public static class Sg4Extensions
 {
     public static ISg4ActionResult GetSg4ActionResult(this IActionResult result)
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Sg4Mvc.Generator.Locators;
@@ -21,10 +22,16 @@ public class Generator : ISourceGenerator
 
     public void Initialize(GeneratorInitializationContext context)
     {
+
     }
 
     public void Execute(GeneratorExecutionContext context)
     {
+        if (!HasGlobalGenerateSg4MvcAttribute(context))
+        {
+            return;
+        }
+
         var settings = new Settings();
         var filePersistService = new FilePersistService(context);
         var controllerGeneratorService = new ControllerGeneratorService(settings);
@@ -62,5 +69,11 @@ public class Generator : ISourceGenerator
             settings);
 
         command.Run(context);
+    }
+
+    private static Boolean HasGlobalGenerateSg4MvcAttribute(GeneratorExecutionContext context)
+    {
+        return context.Compilation.Assembly.GetAttributes()
+            .Any(a => a.AttributeClass.Name == "GenerateSg4MvcAttribute");
     }
 }
