@@ -6,11 +6,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\SampleModels\SampleModels.csproj" />
 		<ProjectReference Include="..\..\src\Sg4Mvc\Sg4Mvc.csproj" />
 		<ProjectReference Include="..\..\src\Sg4Mvc.Generator\Sg4Mvc.Generator.csproj" 
 		                  OutputItemType="Analyzer" 
 		                  ReferenceOutputAssembly="false" />
-		<ProjectReference Include="..\SampleModels\SampleModels.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>

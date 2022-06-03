@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace AspNetSimple.Areas.Members.Controllers
+namespace AspNetSimple.Areas.Members.Controllers;
+
+[MembersArea]
+public partial class TestsController : Controller
 {
-    [MembersArea]
-    public partial class TestsController : Controller
+    public virtual IActionResult Index()
     {
-        public virtual IActionResult Index()
-        {
-            return View();
-        }
+        return View();
     }
 }

@@ -15,11 +15,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
-		<ProjectReference Include="..\..\src\Sg4Mvc\Sg4Mvc.csproj" />
 		<ProjectReference Include="..\SampleModels\SampleModels.csproj" />
-		<ProjectReference Include="..\..\src\Sg4Mvc.Generator\Sg4Mvc.Generator.csproj" 
-		                  OutputItemType="Analyzer" 
-		                  ReferenceOutputAssembly="true" />
+		<ProjectReference Include="..\..\src\Sg4Mvc\Sg4Mvc.csproj" />
+		<ProjectReference Include="..\..\src\Sg4Mvc.Generator\Sg4Mvc.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
 	</ItemGroup>
 
 	<ItemGroup>

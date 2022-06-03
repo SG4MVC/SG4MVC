@@ -2,12 +2,11 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AspNetSimple.Controllers
+namespace AspNetSimple.Controllers;
+
+[Authorize]
+[RequireHttps]
+public partial class SecureController : Controller
 {
-    [Authorize]
-    [RequireHttps]
-    public partial class SecureController : Controller
-    {
-        public virtual IActionResult Index() => throw new NotImplementedException();
-    }
+    public virtual IActionResult Index() => throw new NotImplementedException();
 }
