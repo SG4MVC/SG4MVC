@@ -4,11 +4,15 @@ using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace Sg4Mvc.Generator;
+namespace Sg4Mvc.Generator.Pages;
 
 public class PageDefinition
 {
-    public PageDefinition(String cNamespace, String name, Boolean isSecure, INamedTypeSymbol symbol, List<String> filePaths)
+    public PageDefinition(String cNamespace,
+        String name,
+        Boolean isSecure,
+        INamedTypeSymbol symbol,
+        List<String> filePaths)
     {
         Namespace = cNamespace;
         Name = name;
@@ -22,7 +26,7 @@ public class PageDefinition
     public Boolean IsSecure { get; }
     public INamedTypeSymbol Symbol { get; }
 
-    public IList<String> FilePaths = new List<String>();
+    public IList<String> FilePaths { get; set; }
 
     private String _fullyQualifiedGeneratedName = null;
     public String FullyQualifiedGeneratedName
@@ -30,6 +34,7 @@ public class PageDefinition
         get => _fullyQualifiedGeneratedName ?? $"{Namespace}.{Name}Model";
         set => _fullyQualifiedGeneratedName = value;
     }
+
     public String FullyQualifiedSg4ClassName { get; set; }
 
     public String GetFilePath()

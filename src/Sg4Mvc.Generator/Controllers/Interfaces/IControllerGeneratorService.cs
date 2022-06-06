@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Sg4Mvc.Generator.CodeGen;
 
-namespace Sg4Mvc.Generator.Services.Interfaces;
+namespace Sg4Mvc.Generator.Controllers.Interfaces;
 
 public interface IControllerGeneratorService
 {

@@ -1,9 +1,11 @@
 ﻿using System;
+// ReSharper disable InconsistentNaming
 
 namespace Sg4Mvc.Generator;
 
 public static class FullTypeNames
 {
+    public const String ControllerBase = "Microsoft.AspNetCore.Mvc.ControllerBase";
     public const String PageModel = "Microsoft.AspNetCore.Mvc.RazorPages.PageModel";
 
     public const String AreaAttribute = "Microsoft.AspNetCore.Mvc.AreaAttribute";
@@ -19,5 +21,7 @@ public static class FullTypeNames
     public const String RedirectToRouteResult = "Microsoft.AspNetCore.Mvc.RedirectToRouteResult";
     public const String IConvertToActionResult = "Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult";
     public const String IActionResult = "Microsoft.AspNetCore.Mvc.IActionResult";
+
+    public const String Sg4MvcExcludeAttribute = "Microsoft.AspNetCore.Mvc.Sg4MvcExcludeAttribute";
 
 }

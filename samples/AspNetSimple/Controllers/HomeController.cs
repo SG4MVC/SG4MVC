@@ -39,4 +39,22 @@ public partial class HomeController : Controller
 
         return View(model);
     }
+
+    public virtual IActionResult UsesDifferentView()
+    {
+        return View(MVC.Home.Views.Contact);
+    }
+
+    public virtual IActionResult ReferencesActionName(Int32 namedParam)
+    {
+        var x = MVC.Home.Actions.Actions.ActionNames.ReferencesActionName;
+
+        return Ok();
+    }
+
+    public virtual IActionResult ReferencesShared()
+    {
+        return View(MVC.Shared.Views.Error);
+    }
 }
+//public partial class SharedController : Controller { }

@@ -11,8 +11,6 @@ public class Settings
     public String PageHelpersPrefix { get; set; } = "MVCPages";
     public String Sg4MvcNamespace { get; set; } = "Sg4Mvc";
     public String LinksNamespace { get; set; } = "Links";
-    public Boolean SplitIntoMultipleFiles { get; set; } = true;
-    public Boolean SplitViewOnlyPagesIntoMultipleFiles { get; set; } = true;
     public String StaticFilesPath { get; set; } = "wwwroot";
     public String[] ExcludedStaticFileExtensions { get; set; }
     public String[] ReferencedNamespaces { get; set; }
@@ -25,7 +23,7 @@ public class Settings
     public Boolean GeneratePageViewsClass { get; set; } = false;
     public Boolean ShouldSerializeGeneratePageViewsClass() => GeneratePageViewsClass;
 
-    public FeatureFoldersClass FeatureFolders { get; set; } = new FeatureFoldersClass();
+    public FeatureFoldersClass FeatureFolders { get; set; } = new();
     public class FeatureFoldersClass
     {
         public Boolean Enabled { get; set; }

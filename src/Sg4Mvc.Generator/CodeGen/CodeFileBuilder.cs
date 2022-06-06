@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Sg4Mvc.Generator.Extensions;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Sg4Mvc.Generator.CodeGen;
@@ -109,11 +110,14 @@ public class CodeFileBuilder
                 .Add(ElasticCarriageReturnLineFeed)
                 .Add(GetPragmaCodes(SyntaxKind.RestoreKeyword));
 
-            _compilationUnit = _compilationUnit.WithTrailingTrivia(endTrivia)
-                .NormalizeWhitespace();
+            _compilationUnit = _compilationUnit.WithTrailingTrivia(endTrivia);
         }
 
-        return _compilationUnit
-            .NormalizeWhitespace();
+        return _compilationUnit.NormalizeWhitespace();
+    }
+
+    public void WriteToFile(SourceProductionContext context, String fileName)
+    {
+        context.WriteFile(this.Build(), fileName);
     }
 }

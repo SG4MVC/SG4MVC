@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.CodeAnalysis;
 using Sg4Mvc.Generator.Extensions;
+using Sg4Mvc.Generator.Pages;
 
 namespace Sg4Mvc.Generator.Locators;
 
@@ -19,16 +19,15 @@ public class DefaultRazorPageViewLocator : IPageViewLocator
         _settings = settings;
     }
 
-    public IEnumerable<PageView> Find(GeneratorExecutionContext context)
+    public IEnumerable<PageView> Find(String workingDirectory)
     {
-        var projectRoot = context.GetWorkingDirectory();
-        var pagesRoot = Path.Combine(projectRoot, PagesFolder);
+        var pagesRoot = Path.Combine(workingDirectory, PagesFolder);
 
         if (Directory.Exists(pagesRoot))
         {
             foreach (var filePath in _fileLocator.GetFiles(pagesRoot, "*.cshtml", recurse: true))
             {
-                yield return GetView(projectRoot, pagesRoot, filePath);
+                yield return GetView(workingDirectory, pagesRoot, filePath);
             }
         }
     }

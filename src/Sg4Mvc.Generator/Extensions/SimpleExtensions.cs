@@ -1,16 +1,39 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Sg4Mvc.Generator.Extensions;
 
 public static class SimpleExtensions
 {
-    public static String GetWorkingDirectory(this GeneratorExecutionContext context)
+    public static void ReportAndRestart(this Stopwatch sw, SourceProductionContext spc, String description)
     {
-        context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.MSBuildProjectDirectory", out var projectDirectory);
+        sw.StopAndReport(spc, description);
+        sw.Restart();
+    }
+
+    public static void StopAndReport(this Stopwatch sw, SourceProductionContext spc, String description)
+    {
+        sw.Stop();
+
+        //spc.ReportDiagnostic(Diagnostic.Create(
+        //    "SG4PERF",
+        //    "SG4MVC",
+        //    $"{description} generation time {sw.ElapsedMilliseconds}ms ({sw.ElapsedTicks} ticks)",
+        //    DiagnosticSeverity.Warning,
+        //    DiagnosticSeverity.Warning,
+        //    true,
+        //    1));
+    }
+
+    public static String GetWorkingDirectory(this AnalyzerConfigOptionsProvider optionsProvider)
+    {
+        optionsProvider.GlobalOptions
+            .TryGetValue("build_property.MSBuildProjectDirectory", out var projectDirectory);
 
         return projectDirectory;
     }

@@ -81,10 +81,11 @@ public static class SyntaxNodeHelpers
 
     private static String[] _controllerClassMethodNames = null;
     private static String[] _pageClassMethodNames = null;
-    public static void PopulateControllerClassMethodNames(GeneratorExecutionContext context)
+
+    public static void PopulateControllerClassMethodNames(Compilation compilation)
     {
         var result = new List<String>();
-        var typeSymbol = context.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controller");
+        var typeSymbol = compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controller");
         while (typeSymbol != null)
         {
             var methodNames = typeSymbol.GetMembers()
@@ -98,7 +99,7 @@ public static class SyntaxNodeHelpers
         _controllerClassMethodNames = result.Distinct().ToArray();
 
         result = new List<String>();
-        typeSymbol = context.Compilation.GetTypeByMetadataName(FullTypeNames.PageModel);
+        typeSymbol = compilation.GetTypeByMetadataName(FullTypeNames.PageModel);
         while (typeSymbol != null)
         {
             var methodNames = typeSymbol.GetMembers()

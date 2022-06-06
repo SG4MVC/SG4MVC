@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using Sg4Mvc.Generator.Controllers;
 
 namespace Sg4Mvc.Generator.Locators;
 
 public interface IViewLocator
 {
-    IEnumerable<View> Find(GeneratorExecutionContext context);
+    IEnumerable<View> Find(String workingDirectory);
 }

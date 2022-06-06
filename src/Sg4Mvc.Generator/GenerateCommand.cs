@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Sg4Mvc.Generator.Extensions;
+using Sg4Mvc.Generator.Controllers;
+using Sg4Mvc.Generator.Controllers.Interfaces;
 using Sg4Mvc.Generator.Locators;
+using Sg4Mvc.Generator.Pages;
+using Sg4Mvc.Generator.Pages.Interfaces;
 using Sg4Mvc.Generator.Services;
-using Sg4Mvc.Generator.Services.Interfaces;
 
 namespace Sg4Mvc.Generator;
 
@@ -36,25 +37,22 @@ public class GenerateCommand
 
     public void Run(GeneratorExecutionContext context)
     {
-        var sw = Stopwatch.StartNew();
-
         Console.WriteLine("Project: " + context.Compilation.AssemblyName);
         Console.WriteLine();
 
         // Prep the project Compilation object, and process the Controller public methods list
-        SyntaxNodeHelpers.PopulateControllerClassMethodNames(context);
+        //SyntaxNodeHelpers.PopulateControllerClassMethodNames();
 
-        // Analyse the controllers in the project (updating them to be partial), as well as locate all the view files
+        // Analyse the controllers in the project, as well as locate all the view files
         var controllers = ControllerRewriter.RewriteControllers(context);
-        var allViewFiles = ViewLocators.SelectMany(x => x.Find(context));
+        var allViewFiles = ViewLocators.SelectMany(x => x.Find("context"));
 
         // Assign view files to controllers
         foreach (var views in allViewFiles.GroupBy(v => new { v.AreaName, v.ControllerName }))
         {
             var controller = controllers
-                .Where(c => String.Equals(c.Name, views.Key.ControllerName, StringComparison.OrdinalIgnoreCase))
-                .Where(c => String.Equals(c.Area, views.Key.AreaName, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
+                .FirstOrDefault(c => String.Equals(c.Name, views.Key.ControllerName, StringComparison.OrdinalIgnoreCase)
+                                  && String.Equals(c.Area, views.Key.AreaName, StringComparison.OrdinalIgnoreCase));
 
             if (controller == null)
             {
@@ -72,16 +70,16 @@ public class GenerateCommand
         }
 
         // Generate mappings for area names, to avoid clashes with controller names
-        var areaMap = GenerateAreaMap(controllers);
+        //var areaMap = GenerateAreaMap(controllers);
         foreach (var controller in controllers.Where(a => !String.IsNullOrEmpty(a.Area)))
         {
-            controller.AreaKey = areaMap[controller.Area];
+            //controller.AreaKey = areaMap[controller.Area];
         }
 
-        // Analyse the razor pages in the project (updating them to be partial), as well as locate all the view files
+        // Analyse the razor pages in the project, as well as locate all the view files
         var definitions = PageRewriter.RewritePages(context);
         IList<PageView> pages = PageViewLocators
-            .SelectMany(x => x.Find(context))
+            .SelectMany(x => x.Find("context"))
             .Where(p => p.IsPage)
             .ToList();
 
@@ -90,35 +88,7 @@ public class GenerateCommand
             page.Definition = definitions.FirstOrDefault(d => d.GetFilePath() == (page.FilePath + ".cs"));
         }
 
-        Console.WriteLine();
-
         // Generate the Sg4Mvc.generated.cs file
-        GeneratorService.Generate(context, controllers, pages);
-
-        Settings._generatedByVersion = Generator.GetVersion();
-
-        sw.Stop();
-        Console.WriteLine();
-        Console.WriteLine($"Operation completed in {sw.Elapsed}");
-        Console.WriteLine();
-    }
-
-    public IDictionary<String, String> GenerateAreaMap(IEnumerable<ControllerDefinition> controllers)
-    {
-        var areaMap = controllers
-            .Select(c => c.Area)
-            .Where(a => !String.IsNullOrEmpty(a))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(a => a);
-
-        foreach (var area in areaMap.Keys.ToArray())
-        {
-            if (controllers.Any(c => c.Area == String.Empty && c.Name == area))
-            {
-                areaMap[area] = area + "Area";
-            }
-        }
-
-        return areaMap;
+        //GeneratorService.Generate(context, controllers, pages);
     }
 }

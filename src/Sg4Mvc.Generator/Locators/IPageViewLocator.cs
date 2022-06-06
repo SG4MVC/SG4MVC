@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using Sg4Mvc.Generator.Pages;
 
 namespace Sg4Mvc.Generator.Locators;
 
 public interface IPageViewLocator
 {
-    IEnumerable<PageView> Find(GeneratorExecutionContext context);
+    IEnumerable<PageView> Find(String workingDirectory);
 }

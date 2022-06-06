@@ -1,9 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Sg4Mvc;
-
-[assembly: GenerateSg4Mvc]
 
 namespace AspNetSimple;
 

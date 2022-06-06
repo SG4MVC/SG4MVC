@@ -1,5 +1,5 @@
 ﻿using System;
-using Sg4Mvc.Generator;
+using Sg4Mvc.Generator.Controllers;
 using Xunit;
 
 namespace Sg4Mvc.Test.Locators;

@@ -1,73 +1,10 @@
-﻿using System;
-using Sg4Mvc.Generator;
+﻿using Sg4Mvc.Generator.Controllers;
 using Xunit;
 
 namespace Sg4Mvc.Test;
 
 public class ControllerDefinitionTests
 {
-    /// <summary>
-    /// Want to make sure that GetFilePath never returns null or empty string!
-    /// </summary>
-    [Fact]
-    public void GetFilePath_NoPaths()
-    {
-        Assert.Throws<InvalidOperationException>(delegate
-        {
-            new ControllerDefinition().GetFilePath();
-        });
-    }
-
-    [Fact]
-    public void GetFilePath()
-    {
-        var controller = new ControllerDefinition
-        {
-            FilePaths =
-            {
-                "/Controllers/Controller.cs",
-            },
-        };
-
-        Assert.Equal("/Controllers/Controller.cs", controller.GetFilePath());
-    }
-
-    [Fact]
-    public void GetFilePath_Sort_WrongPath()
-    {
-        var controller = new ControllerDefinition
-        {
-            FilePaths =
-            {
-                "/AFirstController.cs",
-                "/XFirstController.cs",
-                "/Controllers/Controller.cs",
-                "/ALastController.cs",
-                "/XLastController.cs",
-            },
-        };
-
-        Assert.Equal("/Controllers/Controller.cs", controller.GetFilePath());
-    }
-
-    [Fact]
-    public void GetFilePath_Sort_Generated()
-    {
-        var controller = new ControllerDefinition
-        {
-            FilePaths =
-            {
-                "/Controllers/AController.generated.cs",
-                "/Controllers/XController.generated.cs",
-                "/Controllers/Controller.cs",
-                "/Controllers/AController.generated.cs",
-                "/Controllers/XController.generated.cs",
-            },
-        };
-
-        Assert.Equal("/Controllers/Controller.cs", controller.GetFilePath());
-    }
-
     [Fact]
     public void FullyQualifiedName_Default()
     {

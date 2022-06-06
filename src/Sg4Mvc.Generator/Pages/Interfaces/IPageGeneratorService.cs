@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Sg4Mvc.Generator.CodeGen;
+using Sg4Mvc.Generator.Pages;
 
-namespace Sg4Mvc.Generator.Services.Interfaces;
+namespace Sg4Mvc.Generator.Pages.Interfaces;
 
 public interface IPageGeneratorService
 {

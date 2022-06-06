@@ -27,5 +27,9 @@
 	<PropertyGroup>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
+	
+	<ItemGroup>
+		<AssemblyAttribute Include="Sg4Mvc.GenerateSg4Mvc" />
+	</ItemGroup>
 
 </Project>

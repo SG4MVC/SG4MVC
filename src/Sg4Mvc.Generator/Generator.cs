@@ -1,79 +1,81 @@
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
-using Sg4Mvc.Generator.Locators;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Sg4Mvc.Generator.Controllers;
+using Sg4Mvc.Generator.Extensions;
+using Sg4Mvc.Generator.Pages;
 using Sg4Mvc.Generator.Services;
 
 namespace Sg4Mvc.Generator;
 
-[Generator]
-public class Generator : ISourceGenerator
+[Generator(LanguageNames.CSharp)]
+public class Generator : IIncrementalGenerator
 {
-    internal static String GetVersion()
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var assembly = typeof(Generator).Assembly;
+        var controllers = ControllerTargetFilter.GetCompilationDetails(context);
+        var pages = PageTargetFilter.GetCompilationDetails(context);
+        var additionalTexts = AdditionalTextsTargetFilter.GetCompilationDetails(context);
 
-        var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-            ?? assembly.GetName().Version.ToString();
+        var combined = controllers.Collect()
+            .Combine(pages.Collect())
+            .Combine(additionalTexts.Collect())
+            .Combine(context.CompilationProvider)
+            .Combine(context.AnalyzerConfigOptionsProvider);
 
-        return version;
+        context.RegisterSourceOutput(combined, PerformSourceOutput);
     }
 
-    public void Initialize(GeneratorInitializationContext context)
+    private void PerformSourceOutput(SourceProductionContext spc,
+        ((((ImmutableArray<ControllerDefinition> Controllers,
+            ImmutableArray<PageDefinition> Pages) ControllersAndPages,
+            ImmutableArray<AdditionalText> AdditionalTexts) ControllersPagesAndViews,
+            Compilation Compilation) Everything,
+            AnalyzerConfigOptionsProvider ConfigOptionsProvider) source)
     {
+        var ((((controllers, pages), additionalTexts), compilation), configOptionsProvider) = source;
 
-    }
-
-    public void Execute(GeneratorExecutionContext context)
-    {
-        if (!HasGlobalGenerateSg4MvcAttribute(context))
+        if (compilation.Assembly.GetAttributes()
+            .Any(a => a.AttributeClass.Name == "GenerateSg4MvcAttribute"))
         {
-            return;
+            var sw = Stopwatch.StartNew();
+
+            Execute(controllers, pages, additionalTexts, compilation, configOptionsProvider, spc);
+
+            sw.StopAndReport(spc, "Total");
         }
-
-        var settings = new Settings();
-        var filePersistService = new FilePersistService(context);
-        var controllerGeneratorService = new ControllerGeneratorService(settings);
-        var controllerRewriterService = new ControllerRewriterService(controllerGeneratorService);
-        var fileLocator = new PhysicalFileLocator();
-
-        var viewLocators = new IViewLocator[]
-        {
-            new FeatureFolderRazorViewLocator(fileLocator, settings),
-            new DefaultRazorViewLocator(fileLocator, settings)
-        };
-
-        var pageViewLocators = new IPageViewLocator[]
-        {
-            new DefaultRazorPageViewLocator(fileLocator, settings)
-        };
-
-        var staticFileLocators = new IStaticFileLocator[]
-        {
-            new DefaultStaticFileLocator(fileLocator, settings)
-        };
-
-        var command = new GenerateCommand(
-            controllerRewriter: controllerRewriterService,
-            new PageRewriterService(filePersistService, settings),
-            viewLocators,
-            pageViewLocators,
-            new Sg4MvcGeneratorService(
-                controllerRewriterService,
-                controllerGeneratorService,
-                new PageGeneratorService(settings),
-                new StaticFileGeneratorService(staticFileLocators, settings),
-                filePersistService,
-                settings),
-            settings);
-
-        command.Run(context);
     }
 
-    private static Boolean HasGlobalGenerateSg4MvcAttribute(GeneratorExecutionContext context)
+    public static void Execute(
+        ImmutableArray<ControllerDefinition> controllers,
+        ImmutableArray<PageDefinition> pages,
+        ImmutableArray<AdditionalText> additionalTexts,
+        Compilation compilation,
+        AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
+        SourceProductionContext context)
     {
-        return context.Compilation.Assembly.GetAttributes()
-            .Any(a => a.AttributeClass.Name == "GenerateSg4MvcAttribute");
+
+        var sw = Stopwatch.StartNew();
+
+        var workingDirectory = analyzerConfigOptionsProvider.GetWorkingDirectory();
+        sw.ReportAndRestart(context, "GetWorkingDirectory");
+
+        // Prep the project Compilation object, and process the Controller public methods list
+        SyntaxNodeHelpers.PopulateControllerClassMethodNames(compilation);
+        sw.ReportAndRestart(context, "PopulateControllerClassMethodNames");
+
+        var (controllerDefinitions, pageViews) = DataGroupingService.Prep(
+            workingDirectory,
+            controllers.ToList(),
+            pages.ToList(),
+            additionalTexts);
+        sw.ReportAndRestart(context, "DataGroupingService.Prep");
+
+        // Generate the files
+        var generatorService = GeneratorServiceFactory.Create(context);
+        generatorService.Generate(workingDirectory, controllerDefinitions, pageViews);
+        sw.ReportAndRestart(context, "generatorService.Generate");
     }
 }

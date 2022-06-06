@@ -50,7 +50,7 @@ public class TestsControllerTests
 
     [Theory]
     [MemberData(nameof(HasDefaultMethodsCreatedData))]
-    public void HasDefaultMethodsCreated(String className, String methodName, Type controllerClass)
+    public void HasDefaultMethodsCreated(String _, String methodName, Type controllerClass)
     {
         var methods = controllerClass
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)

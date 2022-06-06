@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Sg4Mvc.Generator.Services.Interfaces;
+namespace Sg4Mvc.Generator.Pages.Interfaces;
 
 public interface IPageRewriterService
 {

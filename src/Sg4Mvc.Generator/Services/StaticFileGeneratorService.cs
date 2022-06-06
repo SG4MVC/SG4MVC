@@ -13,19 +13,19 @@ namespace Sg4Mvc.Generator.Services;
 
 public class StaticFileGeneratorService : IStaticFileGeneratorService
 {
-    private readonly IEnumerable<IStaticFileLocator> _staticFileLocators;
+    private readonly IStaticFileLocator _staticFileLocator;
     private readonly Settings _settings;
 
-    public StaticFileGeneratorService(IEnumerable<IStaticFileLocator> staticFileLocators, Settings settings)
+    public StaticFileGeneratorService(IStaticFileLocator staticFileLocator, Settings settings)
     {
-        _staticFileLocators = staticFileLocators;
+        _staticFileLocator = staticFileLocator;
         _settings = settings;
     }
 
     public MemberDeclarationSyntax GenerateStaticFiles(String projectRoot)
     {
         var staticFilesRoot = GetStaticFilesPath(projectRoot);
-        var staticfiles = _staticFileLocators.SelectMany(x => x.Find(staticFilesRoot));
+        var staticfiles = _staticFileLocator.Find(staticFilesRoot);
 
         var linksClass = new ClassBuilder(_settings.LinksNamespace)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword)

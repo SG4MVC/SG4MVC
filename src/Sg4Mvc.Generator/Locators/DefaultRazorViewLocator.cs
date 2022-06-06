@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+using Sg4Mvc.Generator.Controllers;
 using Sg4Mvc.Generator.Extensions;
 using Path = System.IO.Path;
 
@@ -20,21 +20,26 @@ public class DefaultRazorViewLocator : IViewLocator
     private IFileLocator FileLocator { get; }
     protected Settings Settings { get; }
 
-    protected virtual String GetViewsRoot(String projectRoot) => Path.Combine(projectRoot, ViewsFolder);
-    protected virtual String GetAreaViewsRoot(String areaRoot, String areaName) => Path.Combine(areaRoot, ViewsFolder);
-
-    public virtual IEnumerable<View> Find(GeneratorExecutionContext context)
+    protected virtual String GetViewsRoot(String projectRoot)
     {
-        var projectRoot = context.GetWorkingDirectory();
+        return Path.Combine(projectRoot, ViewsFolder);
+    }
 
-        foreach (var (Area, Controller, Path) in FindControllerViewFolders(projectRoot))
+    protected virtual String GetAreaViewsRoot(String areaRoot, String areaName)
+    {
+        return Path.Combine(areaRoot, ViewsFolder);
+    }
+
+    public virtual IEnumerable<View> Find(String workingDirectory)
+    {
+        foreach (var (Area, Controller, Path) in FindControllerViewFolders(workingDirectory))
         {
             if (!FileLocator.DirectoryExists(Path))
             {
                 continue;
             }
 
-            foreach (var view in FindViews(projectRoot, Area, Controller, Path))
+            foreach (var view in FindViews(workingDirectory, Area, Controller, Path))
                 yield return view;
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sg4Mvc.Generator;
+namespace Sg4Mvc.Generator.Pages;
 
 public class PageView : IView
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+using Sg4Mvc.Generator.Controllers;
 using Path = System.IO.Path;
 
 namespace Sg4Mvc.Generator.Locators;
@@ -28,7 +28,7 @@ public class FeatureFolderRazorViewLocator : DefaultRazorViewLocator
                 : Path.Combine(areaRoot, Settings.FeatureFolders.FeaturesPath);
     }
 
-    public override IEnumerable<View> Find(GeneratorExecutionContext context)
+    public override IEnumerable<View> Find(String workingDirectory)
     {
         if (Settings.FeatureFolders?.Enabled != true)
         {
@@ -37,6 +37,6 @@ public class FeatureFolderRazorViewLocator : DefaultRazorViewLocator
 
         _allAreasAreFeatureFolders = Settings.FeatureFolders.FeatureOnlyAreas?.Contains("*") == true;
 
-        return base.Find(context);
+        return base.Find(workingDirectory);
     }
 }
