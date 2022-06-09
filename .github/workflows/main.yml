@@ -12,6 +12,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Restore
+      run: dotnet restore --configuration Release
+
     - name: Build
       run: dotnet build --configuration Release
 
