@@ -1,3 +1,5 @@
+[![SG4MVC on NuGet](https://img.shields.io/nuget/v/SG4MVC.svg)](https://www.nuget.org/profiles/SG4MVC)  
+
 ## SG4MVC
 SG4MVC is a source generator for ASP.NET MVC Core apps that creates strongly typed helpers that eliminate the use of literal strings in many places.  
 
