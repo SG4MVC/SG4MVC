@@ -7,7 +7,7 @@ on:
     inputs:
       version:
         required: true
-        description: 'version in thhe format 1.1.1-beta'
+        description: 'version in the format 1.1.1-beta'
         type: string
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
         path: ./src/Sg4Mvc/SG4MVC.${{ github.event.inputs.version }}.nupkg
         retention-days: 1
       
-    #- name: Push
-    #  run: dotnet nuget push SG4MVC.${VERSION}.nupkg --source https://nuget.pkg.github.com/acraven/index.json --api-key ${GITHUB_TOKEN}
-    #  env: 
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push
+      run: dotnet nuget push ./src/Sg4Mvc/SG4MVC.${{ github.event.inputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
+      env: 
+        GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
