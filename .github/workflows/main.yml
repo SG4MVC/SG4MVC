@@ -31,7 +31,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: nupkg
-        path: SG4MVC.${VERSION}.nupkg
+        path: SG4MVC.${{ github.event.inputs.version }}.nupkg
         retention-days: 1
       
     #- name: Push
