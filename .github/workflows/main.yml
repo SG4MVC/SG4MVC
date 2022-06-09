@@ -22,6 +22,13 @@ jobs:
       run: dotnet pack --configuration Release --output .
       working-directory: ./src/Sg4Mvc
     
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: nupkg
+        path: SG4MVC.${VERSION}.nupkg
+        retention-days: 1
+      
     #- name: Push
     #  run: dotnet nuget push SG4MVC.${VERSION}.nupkg --source https://nuget.pkg.github.com/acraven/index.json --api-key ${GITHUB_TOKEN}
     #  env: 
