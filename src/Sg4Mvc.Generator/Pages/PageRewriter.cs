@@ -52,6 +52,6 @@ public class PageRewriter : CSharpSyntaxRewriter
                && !symbol.IsAbstract
                && symbol.InheritsFrom(FullTypeNames.PageModel)
                && !symbol.GetAttributes().Any(a =>
-                   a.AttributeClass.InheritsFrom("Microsoft.AspNetCore.Mvc.SG4MvcExcludeAttribute"));
+                   a.AttributeClass.InheritsFrom("Microsoft.AspNetCore.Mvc.Sg4MvcExcludeAttribute"));
     }
 }

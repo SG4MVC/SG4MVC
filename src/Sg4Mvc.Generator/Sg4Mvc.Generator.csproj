@@ -17,7 +17,7 @@
 		<PackageProjectUrl>https://github.com/T4MVC/R4MVC</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/T4MVC/R4MVC</RepositoryUrl>
 		<Title>SG4Mvc Generator</Title>
-		<Description>SG4Mvc is a tool that generates strongly typed helpers for ASP.NET Core MVC.</Description>
+		<Description>SG4MVC is a tool that generates strongly typed helpers for ASP.NET Core MVC.</Description>
 		<PackageTags>aspnetcore mvc r4mvc</PackageTags>
 		<VersionPrefix>1.0.0</VersionPrefix>
 		<AssemblyVersion Condition="$(BuildNumber) != ''">$(VersionPrefix).$(BuildNumber)</AssemblyVersion>

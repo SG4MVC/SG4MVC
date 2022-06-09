@@ -40,11 +40,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\SG4Mvc.Generator\SG4Mvc.Generator.csproj" PrivateAssets="all" />
+	  <ProjectReference Include="..\Sg4Mvc.Generator\Sg4Mvc.Generator.csproj" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(OutputPath)\net6.0\SG4Mvc.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<None Include="$(OutputPath)\net6.0\Sg4Mvc.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
 </Project>
