@@ -13,7 +13,8 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Pack
-      run: dotnet pack ./src/Sg4Mvc/Sg4Mvc.csproj --configuration Release --output .
+      run: dotnet pack --configuration Release --output .
+      working-directory: ./src/Sg4Mvc
     
     #- name: Push
     #  run: dotnet nuget push SG4MVC.${VERSION}.nupkg --source https://nuget.pkg.github.com/acraven/index.json --api-key ${GITHUB_TOKEN}
