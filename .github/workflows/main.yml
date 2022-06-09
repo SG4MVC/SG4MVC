@@ -12,6 +12,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Build
+      run: dotnet build --configuration Release
+
     - name: Pack
       run: dotnet pack --configuration Release --output .
       working-directory: ./src/Sg4Mvc
