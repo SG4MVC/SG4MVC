@@ -435,7 +435,7 @@ public class ControllerGeneratorService : IControllerGeneratorService
         return $"Sg4Mvc_{controllerClass.Name}";
     }
 
-    public ClassBuilder WithViewsClass(ClassBuilder classBuilder, IEnumerable<View> viewFiles)
+    public ClassBuilder WithViewsClass(ClassBuilder classBuilder, List<View> viewFiles)
     {
         var viewEditorTemplates = viewFiles.Where(c => c.TemplateKind == "EditorTemplates" || c.TemplateKind == "DisplayTemplates");
         var subpathViews = viewFiles.Where(c => c.TemplateKind != null && c.TemplateKind != "EditorTemplates" && c.TemplateKind != "DisplayTemplates")

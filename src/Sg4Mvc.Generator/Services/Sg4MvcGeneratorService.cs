@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -44,58 +43,51 @@ public class Sg4MvcGeneratorService
         IList<ControllerDefinition> controllers,
         IList<PageView> pages)
     {
-        var sw = Stopwatch.StartNew();
         var areaControllers = controllers.ToLookup(c => c.Area);
 
-        var generatePartialControllerStopwatch = new Stopwatch();
-        var generateSg4ControllerStopwatch = new Stopwatch();
-        var codeFileBuilderStopwatch = new Stopwatch();
-        var controllerFileBuildStopwatch = new Stopwatch();
-        var writeFileStopwatch = new Stopwatch();
-
         // Processing controllers, generating partial and derived controller classes for Sg4Mvc
-        foreach (var namespaceGroup in controllers.Where(c => c.Namespace != null).GroupBy(c => c.Namespace).OrderBy(c => c.Key))
+        var namespaceGroups = controllers
+            .Where(c => c.Namespace != null)
+            .GroupBy(c => c.Namespace)
+            .OrderBy(c => c.Key);
+
+        using (new PerformanceLogger("Total Controllers"))
         {
-            var namespaceNode = NamespaceDeclaration(ParseName(namespaceGroup.Key));
-            foreach (var controller in namespaceGroup.OrderBy(c => c.Name))
+            foreach (var namespaceGroup in namespaceGroups)
             {
-                generatePartialControllerStopwatch.Start();
-                var partialController = _controllerGenerator.GeneratePartialController(controller);
-                generatePartialControllerStopwatch.Stop();
-                generateSg4ControllerStopwatch.Start();
-                var sg4Controller = _controllerGenerator.GenerateSg4Controller(controller);
-                generateSg4ControllerStopwatch.Stop();
-                namespaceNode = namespaceNode.AddMembers(
-                    partialController,
-                    sg4Controller);
+                using (new PerformanceLogger($"Total Namespace: {namespaceGroup.Key}"))
+                {
+                    var namespaceNode = NamespaceDeclaration(ParseName(namespaceGroup.Key));
+                    foreach (var controller in namespaceGroup.OrderBy(c => c.Name))
+                    {
+                        var partialController = _controllerGenerator.GeneratePartialController(controller);
+                        var sg4Controller = _controllerGenerator.GenerateSg4Controller(controller);
+                        namespaceNode = namespaceNode.AddMembers(
+                            partialController,
+                            sg4Controller);
 
-                var generatedFilePath = controller.FullyQualifiedGeneratedName.Replace('.', '_') + ".generated.cs";
+                        var generatedFilePath =
+                            controller.FullyQualifiedGeneratedName.Replace('.', '_') + ".generated.cs";
 
-                codeFileBuilderStopwatch.Start();
-                var controllerFile = new CodeFileBuilder(_settings, true)
-                    .WithNamespace(namespaceNode);
-                codeFileBuilderStopwatch.Stop();
+                        var controllerFile = new CodeFileBuilder(_settings, true)
+                            .WithNamespace(namespaceNode);
 
-                controllerFileBuildStopwatch.Start();
-                var builtControllerFile = controllerFile.Build();
-                controllerFileBuildStopwatch.Start();
+                        var builtControllerFile = controllerFile.Build();
 
-                writeFileStopwatch.Start();
-                _context.WriteFile(builtControllerFile, generatedFilePath);
-                writeFileStopwatch.Stop();
+                        _context.WriteFile(builtControllerFile, generatedFilePath);
 
-                namespaceNode = NamespaceDeclaration(ParseName(namespaceGroup.Key));
+                        namespaceNode = NamespaceDeclaration(ParseName(namespaceGroup.Key));
+
+                        Logging.ReportProgress($"Processed Controller: {controller.FullyQualifiedGeneratedName}");
+                    }
+                }
             }
         }
-        generatePartialControllerStopwatch.StopAndReport(_context, "generatePartialControllerStopwatch");
-        generateSg4ControllerStopwatch.StopAndReport(_context, "generateSg4ControllerStopwatch");
-        codeFileBuilderStopwatch.StopAndReport(_context, "codeFileBuilderStopwatch");
-        controllerFileBuildStopwatch.StopAndReport(_context, "controllerFileBuildStopwatch");
-        writeFileStopwatch.StopAndReport(_context, "writeFileStopwatch");
-        sw.ReportAndRestart(_context, "Processing Controllers");
 
         var generatedPages = new List<NamespaceDeclarationSyntax>();
-        foreach (var namespaceGroup in pages.GroupBy(p => p.Definition?.Namespace ?? _settings.Sg4MvcNamespace).OrderBy(p => p.Key))
+        foreach (var namespaceGroup in pages
+                     .GroupBy(p => p.Definition?.Namespace ?? _settings.Sg4MvcNamespace)
+                     .OrderBy(p => p.Key))
         {
             var namespaceNode = NamespaceDeclaration(ParseName(namespaceGroup.Key));
             foreach (var page in namespaceGroup.OrderBy(p => p.Name))
@@ -124,7 +116,8 @@ public class Sg4MvcGeneratorService
                             .WithNamespace(NamespaceDeclaration(ParseName(page.Definition.Namespace))
                                 .AddMembers(new ClassBuilder(page.Definition.Name)
                                     .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
-                                    .WithComment("// Use this file to add custom extensions and helper methods to this page")
+                                    .WithComment(
+                                        "// Use this file to add custom extensions and helper methods to this page")
                                     .Build()))
                             .Build();
 
@@ -150,7 +143,7 @@ public class Sg4MvcGeneratorService
             }
         }
 
-        sw.ReportAndRestart(_context, "Processing Pages");
+        Logging.ReportProgress("Total Pages");
 
         // Sg4Mvc namespace used for the areas and Dummy class
         var sg4Namespace = NamespaceDeclaration(ParseName(_settings.Sg4MvcNamespace))
@@ -165,6 +158,8 @@ public class Sg4MvcGeneratorService
             .AddMembers(CreateViewOnlyControllerClasses(controllers).ToArray<MemberDeclarationSyntax>())
             .AddMembers(CreateAreaClasses(areaControllers).ToArray<MemberDeclarationSyntax>())
             .AddMembers(CreatePagePathClasses(pages, out var topLevelPagePaths).ToArray<MemberDeclarationSyntax>());
+
+        Logging.ReportProgress($"Create {nameof(sg4Namespace)}");
 
         // create static MVC class and add the area and controller fields
         var mvcStaticClass = new ClassBuilder(_settings.HelpersPrefix)
@@ -188,6 +183,8 @@ public class Sg4MvcGeneratorService
         new CodeFileBuilder(_settings, true)
             .WithMembers(mvcStaticClass.Build())
             .WriteToFile(_context, mvcStaticClass.Name + ".cs");
+
+        Logging.ReportProgress($"Create {nameof(mvcStaticClass)}");
 
         var mvcPagesStaticClass = new ClassBuilder(_settings.PageHelpersPrefix)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword)
@@ -213,8 +210,14 @@ public class Sg4MvcGeneratorService
             .WithMembers(mvcPagesStaticClass.Build())
             .WriteToFile(_context, mvcPagesStaticClass.Name + ".cs");
 
+        Logging.ReportProgress($"Create {nameof(mvcPagesStaticClass)}");
+
         // Generate a list of all static files from the wwwroot path
-        var staticFileNode = _staticFileGenerator.GenerateStaticFiles(workingDirectory);
+        MemberDeclarationSyntax staticFileNode;
+        using (new PerformanceLogger("Total _staticFileGenerator.GenerateStaticFiles"))
+        {
+            staticFileNode = _staticFileGenerator.GenerateStaticFiles(workingDirectory);
+        }
 
         var sg4MvcFile = new CodeFileBuilder(_settings, true)
             .WithMembers(
@@ -222,11 +225,15 @@ public class Sg4MvcGeneratorService
                 staticFileNode)
             .WithNamespaces(generatedPages);
 
-        Console.WriteLine("Generating " + Path.DirectorySeparatorChar + Constants.Sg4MvcGeneratedFileName);
+        Logging.ReportProgress($"Create {nameof(sg4MvcFile)}");
 
-        _context.WriteFile(sg4MvcFile.Build(), Constants.Sg4MvcGeneratedFileName);
+        var sg4MvcFileCompiled = sg4MvcFile.Build();
 
-        sw.ReportAndRestart(_context, "Everything Else");
+        Logging.ReportProgress($"Build {nameof(sg4MvcFile)}");
+
+        _context.WriteFile(sg4MvcFileCompiled, Constants.Sg4MvcGeneratedFileName);
+
+        Logging.ReportProgress($"WriteFile {nameof(sg4MvcFile)}");
     }
 
     public IEnumerable<ClassDeclarationSyntax> CreateViewOnlyControllerClasses(IList<ControllerDefinition> controllers)
@@ -272,7 +279,7 @@ public class Sg4MvcGeneratorService
 
         if (_settings.GeneratePageViewsClass)
         {
-            _pageGenerator.WithViewsClass(pageClass, new[] { page });
+            _pageGenerator.WithViewsClass(pageClass, new List<PageView> { page });
         }
 
         return pageClass.Build();
@@ -297,12 +304,13 @@ public class Sg4MvcGeneratorService
         }
     }
 
-    public IEnumerable<ClassDeclarationSyntax> CreatePagePathClasses(IList<PageView> pages, out IDictionary<String, String> topLevelPagePaths)
+    public List<ClassDeclarationSyntax> CreatePagePathClasses(IList<PageView> pages,
+        out IDictionary<String, String> topLevelPagePaths)
     {
         if (!pages.Any())
         {
             topLevelPagePaths = null;
-            return Array.Empty<ClassDeclarationSyntax>();
+            return new List<ClassDeclarationSyntax>(0);
         }
 
         var splitter = "_";
@@ -350,6 +358,8 @@ public class Sg4MvcGeneratorService
         topLevelPagePaths = pagePaths.Where(k => k.IndexOf(splitter) == -1)
             .ToDictionary(k => k, k => $"{_settings.Sg4MvcNamespace}.{k}PathClass");
 
-        return pathClasses.Values.Select(c => c.Build());
+        return pathClasses.Values
+            .Select(c => c.Build())
+            .ToList();
     }
 }

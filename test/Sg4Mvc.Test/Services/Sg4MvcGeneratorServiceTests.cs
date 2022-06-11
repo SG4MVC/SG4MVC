@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Moq;
+using Microsoft.CodeAnalysis;
 using Sg4Mvc.Generator;
 using Sg4Mvc.Generator.Controllers;
 using Sg4Mvc.Generator.Controllers.Interfaces;
@@ -15,26 +13,21 @@ namespace Sg4Mvc.Test.Services;
 
 public class Sg4MvcGeneratorServiceTests
 {
-    private IFilePersistService DummyPersistService => new Mock<IFilePersistService>().Object;
     private Sg4MvcGeneratorService GetGeneratorService(
-        IControllerRewriterService controllerRewriter = null,
         IControllerGeneratorService controllerGenerator = null,
         IPageGeneratorService pageGenerator = null,
         IStaticFileGeneratorService staticFileGenerator = null,
-        IFilePersistService filePersistService = null,
-        Settings settings = null)
+        Settings settings = null,
+        SourceProductionContext? context = null
+    )
     {
-        if (settings == null)
-        {
-            settings = new Settings();
-        }
+        settings ??= new Settings();
 
-        if (controllerGenerator == null)
-        {
-            controllerGenerator = new ControllerGeneratorService(settings);
-        }
+        controllerGenerator ??= new ControllerGeneratorService(settings);
 
-        return new Sg4MvcGeneratorService(controllerRewriter, controllerGenerator, pageGenerator, staticFileGenerator, filePersistService ?? DummyPersistService, settings);
+        context ??= new SourceProductionContext();
+
+        return new Sg4MvcGeneratorService(controllerGenerator, pageGenerator, staticFileGenerator, settings, context.Value);
     }
 
     [Fact]
@@ -132,79 +125,5 @@ public class Sg4MvcGeneratorServiceTests
         Assert.Collection(areaClasses,
             a => Assert.Equal("Admin1AreaClass", a.Identifier.Value),
             a => Assert.Equal("Admin2AreaClass", a.Identifier.Value));
-    }
-
-    private void AssertIActionResultClass(ClassDeclarationSyntax actionClass, String className, String baseClassName)
-    {
-        actionClass
-            .AssertIs(SyntaxKind.InternalKeyword, SyntaxKind.PartialKeyword)
-            .AssertName(className);
-        Assert.Collection(actionClass.BaseList.Types,
-            t => Assert.Equal(baseClassName, (t.Type as IdentifierNameSyntax).Identifier.Value),
-            t => Assert.Equal("ISg4MvcActionResult", (t.Type as IdentifierNameSyntax).Identifier.Value));
-        Assert.Contains(actionClass.Members,
-            m =>
-            {
-                var constructor = Assert.IsType<ConstructorDeclarationSyntax>(m).AssertIsPublic();
-                Assert.Equal(4, constructor.ParameterList.Parameters.Count);
-                return true;
-            });
-
-    }
-
-    [Fact]
-    public void ActionResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.ActionResultClass();
-        AssertIActionResultClass(actionClass, Constants.ActionResultClass, "ActionResult");
-    }
-
-    [Fact]
-    public void JsonResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.JsonResultClass();
-        AssertIActionResultClass(actionClass, Constants.JsonResultClass, "JsonResult");
-    }
-
-    [Fact]
-    public void ContentResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.ContentResultClass();
-        AssertIActionResultClass(actionClass, Constants.ContentResultClass, "ContentResult");
-    }
-
-    [Fact]
-    public void FileResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.FileResultClass();
-        AssertIActionResultClass(actionClass, Constants.FileResultClass, "FileResult");
-    }
-
-    [Fact]
-    public void RedirectResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.RedirectResultClass();
-        AssertIActionResultClass(actionClass, Constants.RedirectResultClass, "RedirectResult");
-    }
-
-    [Fact]
-    public void RedirectToActionResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.RedirectToActionResultClass();
-        AssertIActionResultClass(actionClass, Constants.RedirectToActionResultClass, "RedirectToActionResult");
-    }
-
-    [Fact]
-    public void RedirectToRouteResultClass()
-    {
-        var service = GetGeneratorService();
-        var actionClass = service.RedirectToRouteResultClass();
-        AssertIActionResultClass(actionClass, Constants.RedirectToRouteResultClass, "RedirectToRouteResult");
     }
 }

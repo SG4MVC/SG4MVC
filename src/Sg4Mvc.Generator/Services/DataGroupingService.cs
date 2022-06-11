@@ -62,7 +62,7 @@ public static class DataGroupingService
     )
     {
         var pages = viewLocators
-            .SelectMany(vl => vl.Find(workingDirectory))
+            .SelectMany(vl => vl.Find(workingDirectory).ToList())
             .Where(p => p.IsPage)
             .ToList();
 
@@ -82,7 +82,7 @@ public static class DataGroupingService
         IViewLocator[] viewLocators
     )
     {
-        var allViewFiles = viewLocators.SelectMany(x => x.Find(workingDirectory));
+        var allViewFiles = viewLocators.SelectMany(x => x.Find(workingDirectory).ToList());
 
         foreach (var views in allViewFiles.GroupBy(v => new { v.AreaName, v.ControllerName }))
         {

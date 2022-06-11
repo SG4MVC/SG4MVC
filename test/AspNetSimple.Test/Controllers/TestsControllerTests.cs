@@ -13,7 +13,7 @@ namespace AspNetSimple.Test.Controllers;
 
 public class TestsControllerTests
 {
-    private static IEnumerable<MethodInfo> GetControllerMethods()
+    private static List<MethodInfo> GetControllerMethods()
     {
         var controllers = typeof(TestsController).Assembly.GetTypes()
             .Where(t => t.IsPublic)
@@ -28,10 +28,11 @@ public class TestsControllerTests
             .Where(cm => cm.GetCustomAttribute<Sg4MvcExcludeAttribute>() == null);
 
         return methods
-            .Where(m => !controllerMethods.Any(cm => cm.Name == m.Name));
+            .Where(m => !controllerMethods.Any(cm => cm.Name == m.Name))
+            .ToList();
     }
 
-    public static IEnumerable<Object[]> HasDefaultMethodsCreatedData
+    public static List<Object[]> HasDefaultMethodsCreatedData
         => GetControllerMethods()
             .Where(m =>
             {
@@ -46,11 +47,12 @@ public class TestsControllerTests
                     typeof(IConvertToActionResult).IsAssignableFrom(returnType);
             })
             .GroupBy(m => new { m.DeclaringType, m.Name })
-            .Select(m => new Object[] { m.Key.DeclaringType.Name, m.Key.Name, m.Key.DeclaringType });
+            .Select(m => new Object[] { m.Key.Name, m.Key.DeclaringType })
+            .ToList();
 
     [Theory]
     [MemberData(nameof(HasDefaultMethodsCreatedData))]
-    public void HasDefaultMethodsCreated(String _, String methodName, Type controllerClass)
+    public void HasDefaultMethodsCreated(String methodName, Type controllerClass)
     {
         var methods = controllerClass
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)

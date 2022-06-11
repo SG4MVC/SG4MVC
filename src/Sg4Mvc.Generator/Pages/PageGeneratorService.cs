@@ -121,7 +121,7 @@ public class PageGeneratorService : IPageGeneratorService
 
         if (_settings.GeneratePageViewsClass)
         {
-            WithViewsClass(genControllerClass, new[] { pageView });
+            WithViewsClass(genControllerClass, new List<PageView> { pageView });
         }
 
         return genControllerClass.Build();
@@ -458,7 +458,7 @@ public class PageGeneratorService : IPageGeneratorService
         return $"Sg4Mvc_{controllerClass.Name}";
     }
 
-    public ClassBuilder WithViewsClass(ClassBuilder classBuilder, IEnumerable<PageView> viewFiles)
+    public ClassBuilder WithViewsClass(ClassBuilder classBuilder, List<PageView> viewFiles)
     {
         var viewEditorTemplates = viewFiles.Where(c => c.TemplateKind == "EditorTemplates" || c.TemplateKind == "DisplayTemplates");
         var subpathViews = viewFiles.Where(c => c.TemplateKind != null && c.TemplateKind != "EditorTemplates" && c.TemplateKind != "DisplayTemplates")

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.CodeAnalysis;
 using Sg4Mvc.Generator;
 using Sg4Mvc.Generator.Locators;
 using Xunit;
@@ -12,9 +11,9 @@ public class DefaultRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void BasicProject()
     {
         var locator = new DefaultRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var context = new GeneratorExecutionContext();
+        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Collection(locator.Find(context),
+        Assert.Collection(locator.Find(workingDirectory),
             v => AssertView(v, "", "EditorTemplates", "User", null, "~/Views/EditorTemplates/User.cshtml"),
             v => AssertView(v, "", "Users", "Index", null, "~/Views/Users/Index.cshtml"),
             v => AssertView(v, "", "Users", "Details", null, "~/Views/Users/Details.cshtml"),
@@ -30,9 +29,9 @@ public class DefaultRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void AreaAsProjectPath()
     {
         var locator = new DefaultRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var context = new GeneratorExecutionContext();
+        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Collection(locator.Find(context),
+        Assert.Collection(locator.Find(workingDirectory),
             v => AssertView(v, "", "Home", "Index", null, "~/Views/Home/Index.cshtml"),
             v => AssertView(v, "", "Shared", "_Layout", null, "~/Views/Shared/_Layout.cshtml"),
             v => AssertView(v, "", "Shared", "User", "EditorTemplates", "~/Views/Shared/EditorTemplates/User.cshtml")
@@ -48,8 +47,8 @@ public class DefaultRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void WrongProjectPaths(String path)
     {
         var locator = new DefaultRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var context = new GeneratorExecutionContext();
+        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Empty(locator.Find(context));
+        Assert.Empty(locator.Find(workingDirectory));
     }
 }

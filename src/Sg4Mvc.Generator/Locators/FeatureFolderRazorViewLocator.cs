@@ -32,11 +32,11 @@ public class FeatureFolderRazorViewLocator : DefaultRazorViewLocator
     {
         if (Settings.FeatureFolders?.Enabled != true)
         {
-            return Array.Empty<View>();
+            return new List<View>(0);
         }
 
         _allAreasAreFeatureFolders = Settings.FeatureFolders.FeatureOnlyAreas?.Contains("*") == true;
 
-        return base.Find(workingDirectory);
+        return base.Find(workingDirectory).ToList();
     }
 }

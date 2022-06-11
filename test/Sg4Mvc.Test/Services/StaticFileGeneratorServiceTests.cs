@@ -16,9 +16,12 @@ public class StaticFileGeneratorServiceTests
     public void CreateLinks()
     {
         var settings = new Settings();
-        var staticFileGeneratorService = new StaticFileGeneratorService(new IStaticFileLocator[0], settings);
+        var staticFileGeneratorService = new StaticFileGeneratorService(null, settings);
+
         var result = staticFileGeneratorService.GenerateStaticFiles(VirtualFileLocator.ProjectRoot);
-        result.AssertIsClass(settings.LinksNamespace).AssertIs(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword);
+
+        result.AssertIsClass(settings.LinksNamespace)
+            .AssertIs(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword);
     }
 
     [Fact]
@@ -27,7 +30,7 @@ public class StaticFileGeneratorServiceTests
         var settings = new Settings();
         var staticFileLocator = new DefaultStaticFileLocator(VirtualFileLocator.Default, settings);
         var staticFiles = staticFileLocator.Find(VirtualFileLocator.ProjectRoot_wwwroot);
-        var staticFileGeneratorService = new StaticFileGeneratorService(new[] { staticFileLocator }, new Settings());
+        var staticFileGeneratorService = new StaticFileGeneratorService(staticFileLocator, new Settings());
 
         var c = new ClassBuilder("Test")
             .WithGeneratedNonUserCodeAttributes();

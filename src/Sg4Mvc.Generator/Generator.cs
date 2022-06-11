@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -40,11 +39,7 @@ public class Generator : IIncrementalGenerator
         if (compilation.Assembly.GetAttributes()
             .Any(a => a.AttributeClass.Name == "GenerateSg4MvcAttribute"))
         {
-            var sw = Stopwatch.StartNew();
-
             Execute(controllers, pages, additionalTexts, compilation, configOptionsProvider, spc);
-
-            sw.StopAndReport(spc, "Total");
         }
     }
 
@@ -56,26 +51,26 @@ public class Generator : IIncrementalGenerator
         AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
         SourceProductionContext context)
     {
-
-        var sw = Stopwatch.StartNew();
-
         var workingDirectory = analyzerConfigOptionsProvider.GetWorkingDirectory();
-        sw.ReportAndRestart(context, "GetWorkingDirectory");
+        Logging.LogDirectory = workingDirectory;
+
+        Logging.ReportProgress("GetWorkingDirectory");
 
         // Prep the project Compilation object, and process the Controller public methods list
         SyntaxNodeHelpers.PopulateControllerClassMethodNames(compilation);
-        sw.ReportAndRestart(context, "PopulateControllerClassMethodNames");
+        Logging.ReportProgress("PopulateControllerClassMethodNames");
 
         var (controllerDefinitions, pageViews) = DataGroupingService.Prep(
             workingDirectory,
             controllers.ToList(),
             pages.ToList(),
             additionalTexts);
-        sw.ReportAndRestart(context, "DataGroupingService.Prep");
+        Logging.ReportProgress("DataGroupingService.Prep");
 
         // Generate the files
         var generatorService = GeneratorServiceFactory.Create(context);
         generatorService.Generate(workingDirectory, controllerDefinitions, pageViews);
-        sw.ReportAndRestart(context, "generatorService.Generate");
+
+        Logging.WriteFile();
     }
 }

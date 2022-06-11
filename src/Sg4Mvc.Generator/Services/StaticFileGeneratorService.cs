@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
@@ -25,13 +26,32 @@ public class StaticFileGeneratorService : IStaticFileGeneratorService
     public MemberDeclarationSyntax GenerateStaticFiles(String projectRoot)
     {
         var staticFilesRoot = GetStaticFilesPath(projectRoot);
+        Logging.ReportProgress("GetStaticFilesPath");
+
         var staticfiles = _staticFileLocator.Find(staticFilesRoot);
+        Logging.ReportProgress("_staticFileLocator.Find");
 
         var linksClass = new ClassBuilder(_settings.LinksNamespace)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword)
             .WithGeneratedNonUserCodeAttributes();
+        Logging.ReportProgress("create linksClass");
+
         AddUrlFields(linksClass, String.Empty);
-        AddStaticFiles(projectRoot, linksClass, String.Empty, staticfiles);
+        Logging.ReportProgress("AddUrlFields");
+
+        using (new PerformanceLogger("Total AddStaticFiles"))
+        {
+            AddStaticFiles(projectRoot, linksClass, String.Empty, staticfiles);
+        }
+
+        Logging.ReportStopwatch("CreatePathsTotal", CreatePathsTotal);
+        Logging.ReportStopwatch("PrepareNamesTotal", PrepareNamesTotal);
+        Logging.ReportStopwatch("WithModifiersTotal", WithModifiersTotal);
+        Logging.ReportStopwatch("AddUrlFieldsTotal", AddUrlFieldsTotal);
+        Logging.ReportStopwatch("AddValueFieldsTotal", AddValueFieldsTotal);
+        Logging.ReportStopwatch("SanitiseFieldNameTotal", SanitiseFieldNameTotal);
+        Logging.ReportStopwatch("WithValueFieldTotal", WithValueFieldTotal);
+
         return linksClass.Build();
     }
 
@@ -51,16 +71,26 @@ public class StaticFileGeneratorService : IStaticFileGeneratorService
                 .WithExpresisonBody(BodyBuilder.MethodCallExpression(Constants.Sg4MvcHelpersClass, Constants.Sg4MvcHelpers_ProcessVirtualPath, new[] { "UrlPath + \"/\" + fileName" })));
     }
 
-    public void AddStaticFiles(String projectRoot, ClassBuilder parentClass, String path, IEnumerable<StaticFile> files)
+    public static Stopwatch CreatePathsTotal = new();
+    public static Stopwatch PrepareNamesTotal = new();
+    public static Stopwatch WithModifiersTotal = new();
+    public static Stopwatch AddUrlFieldsTotal = new();
+    public static Stopwatch AddValueFieldsTotal = new();
+    public static Stopwatch SanitiseFieldNameTotal = new();
+    public static Stopwatch WithValueFieldTotal = new();
+
+    public void AddStaticFiles(String projectRoot,
+        ClassBuilder parentClass,
+        String path,
+        List<StaticFile> files)
     {
-        var paths = files
-            .Select(f => f.Container)
-            .Distinct()
-            .OrderBy(p => p)
+        CreatePathsTotal.Start();
+        var paths = files.Select(f => f.Container).Distinct().OrderBy(p => p)
             .Where(c => c.StartsWith(path) && c.Length > path.Length)
             .Select(c =>
             {
                 var index = c.IndexOf('/', path.Length > 0 ? path.Length + 1 : 0);
+
                 if (index == -1)
                 {
                     return c;
@@ -69,29 +99,61 @@ public class StaticFileGeneratorService : IStaticFileGeneratorService
                 return c.Substring(0, index);
             })
             .Distinct();
+        CreatePathsTotal.Stop();
 
         foreach (var childPath in paths)
         {
-            var childFiles = files.Where(f => f.Container.StartsWith(childPath));
-            var className = childPath.Substring(path.Length > 0 ? path.Length + 1 : 0).SanitiseFieldName();
+            PrepareNamesTotal.Start();
+            var childFiles = files
+                .Where(f => f.Container.StartsWith(childPath))
+                .ToList();
+
+            var className = childPath
+                .Substring(path.Length > 0 ? path.Length + 1 : 0)
+                .SanitiseFieldName();
+            PrepareNamesTotal.Stop();
+
             parentClass.WithChildClass(className, containerClass =>
             {
-                containerClass.WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword);
-                AddUrlFields(containerClass, Path.Combine(projectRoot, childPath).GetRelativePath(projectRoot).Replace('\\', '/'));
+                WithModifiersTotal.Start();
+                containerClass.WithModifiers(
+                    SyntaxKind.PublicKeyword,
+                    SyntaxKind.StaticKeyword,
+                    SyntaxKind.PartialKeyword);
+                WithModifiersTotal.Stop();
+
+                AddUrlFieldsTotal.Start();
+                AddUrlFields(containerClass, Path.Combine(projectRoot, childPath)
+                    .GetRelativePath(projectRoot).Replace('\\', '/'));
+                AddUrlFieldsTotal.Stop();
+
                 AddStaticFiles(projectRoot, containerClass, childPath, childFiles);
             });
         }
 
         var localFiles = files.Where(f => f.Container == path);
+
+        AddValueFieldsTotal.Start();
         foreach (var file in localFiles)
         {
+            SanitiseFieldNameTotal.Start();
             var fieldName = file.FileName.SanitiseFieldName();
+            SanitiseFieldNameTotal.Stop();
+
+            WithValueFieldTotal.Start();
             if (fieldName == parentClass.Name)
             {
                 fieldName += "_";
             }
 
-            parentClass.WithValueField(fieldName, "string", $"Url(\"{file.FileName}\")", SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            parentClass.WithValueField(fieldName,
+                "string",
+                $"Url(\"{file.FileName}\")",
+                SyntaxKind.PublicKeyword,
+                SyntaxKind.StaticKeyword,
+                SyntaxKind.ReadOnlyKeyword);
+            WithValueFieldTotal.Stop();
         }
+        AddValueFieldsTotal.Stop();
     }
 }

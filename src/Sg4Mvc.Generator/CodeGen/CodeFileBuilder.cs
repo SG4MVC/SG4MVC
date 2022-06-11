@@ -81,7 +81,7 @@ public class CodeFileBuilder
         return this;
     }
 
-    public CodeFileBuilder WithNamespaces(IEnumerable<NamespaceDeclarationSyntax> namespaces)
+    public CodeFileBuilder WithNamespaces(List<NamespaceDeclarationSyntax> namespaces)
     {
         foreach (var ns in namespaces)
             _compilationUnit = _compilationUnit.AddMembers(ns);
