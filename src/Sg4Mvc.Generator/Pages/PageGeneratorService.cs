@@ -333,7 +333,7 @@ public class PageGeneratorService : IPageGeneratorService
                 /* [GeneratedCode, DebuggerNonUserCode]
                  * public virtual IActionResult {method.Key}()
                  * {
-                 *  return new Sg4Mvc_Microsoft_AspNetCore_Mvc_RazorPages_ActionResult(Name, HandlerNames.{Handler});
+                 *  return new Sg4Mvc_RazorPages_ActionResult(Name, HandlerNames.{Handler});
                  * }
                  */
                 .WithMethod(method.Key, "IActionResult", m => m
@@ -426,7 +426,7 @@ public class PageGeneratorService : IPageGeneratorService
                 /* [NonHandler]
                  * public overrive {ActionResultType} {action}([� params])
                  * {
-                 *  var callInfo = new Sg4Mvc_Microsoft_AspNetCore_Mvc_RazorPages_ActionResult(Name, HandlerNames.{Handler});
+                 *  var callInfo = new Sg4Mvc_RazorPages_ActionResult(Name, HandlerNames.{Handler});
                  *  ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "paramName", paramName);
                  *  {Action}Override(callInfo, {parameters});
                  *  return callInfo;

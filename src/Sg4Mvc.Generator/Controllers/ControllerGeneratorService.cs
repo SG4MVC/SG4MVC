@@ -319,7 +319,7 @@ public class ControllerGeneratorService : IControllerGeneratorService
                 /* [GeneratedCode, DebuggerNonUserCode]
                  * public virtual IActionResult {method.Key}()
                  * {
-                 *  return new Sg4Mvc_Microsoft_AspNetCore_Mvc_ActionResult(Area, Name, ActionNames.{Action});
+                 *  return new Sg4Mvc_Mvc_ActionResult(Area, Name, ActionNames.{Action});
                  * }
                  */
                 .WithMethod(method.Key, "IActionResult", m => m
@@ -403,7 +403,7 @@ public class ControllerGeneratorService : IControllerGeneratorService
                 /* [NonAction]
                  * public overrive {ActionResultType} {action}([… params])
                  * {
-                 *  var callInfo = new Sg4Mvc_Microsoft_AspNetCore_Mvc_ActionResult(Area, Name, ActionNames.{Action});
+                 *  var callInfo = new Sg4Mvc_Mvc_ActionResult(Area, Name, ActionNames.{Action});
                  *  ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "paramName", paramName);
                  *  {Action}Override(callInfo, {parameters});
                  *  return callInfo;
