@@ -148,24 +148,26 @@ public static class SyntaxNodeHelpers
         return true;
     }
 
-    public static IEnumerable<IMethodSymbol> GetPublicNonGeneratedControllerMethods(this ITypeSymbol controller)
+    public static List<IMethodSymbol> GetPublicNonGeneratedControllerMethods(this ITypeSymbol controller)
     {
         return controller.GetMembers()
             .OfType<IMethodSymbol>()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.MethodKind == MethodKind.Ordinary)
             .Where(IsNotSg4MvcGenerated)
             .Where(IsNotSg4MvcExcluded)
-            .Where(IsMvcAction);
+            .Where(IsMvcAction)
+            .ToList();
     }
 
-    public static IEnumerable<IMethodSymbol> GetPublicNonGeneratedPageMethods(this ITypeSymbol controller)
+    public static List<IMethodSymbol> GetPublicNonGeneratedPageMethods(this ITypeSymbol controller)
     {
         return controller.GetMembers()
             .OfType<IMethodSymbol>()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.MethodKind == MethodKind.Ordinary)
             .Where(IsNotSg4MvcGenerated)
             .Where(IsNotSg4MvcExcluded)
-            .Where(IsRazorPageAction);
+            .Where(IsRazorPageAction)
+            .ToList();
     }
 
     private static AttributeSyntax CreateGeneratedCodeAttribute()

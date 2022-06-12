@@ -126,7 +126,9 @@ public class BodyBuilder
         if (items != null)
         {
             foreach (var item in items)
+            {
                 action(this, item);
+            }
         }
 
         return this;

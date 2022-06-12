@@ -31,7 +31,4 @@ public class ControllerDefinitionTests
 
     [Fact]
     public void Views_NotNull() => Assert.NotNull(new ControllerDefinition().Views);
-
-    [Fact]
-    public void FilePaths_NotNull() => Assert.NotNull(new ControllerDefinition().FilePaths);
 }

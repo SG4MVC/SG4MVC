@@ -11,5 +11,5 @@ public interface IControllerGeneratorService
     String GetControllerArea(INamedTypeSymbol controllerSymbol);
     ClassDeclarationSyntax GeneratePartialController(ControllerDefinition controller);
     ClassDeclarationSyntax GenerateSg4Controller(ControllerDefinition controller);
-    ClassBuilder WithViewsClass(ClassBuilder classBuilder, IEnumerable<View> viewFiles);
+    ClassBuilder WithViewsClass(ClassBuilder classBuilder, List<View> viewFiles);
 }

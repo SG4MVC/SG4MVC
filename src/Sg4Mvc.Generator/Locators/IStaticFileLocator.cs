@@ -5,5 +5,5 @@ namespace Sg4Mvc.Generator.Locators;
 
 public interface IStaticFileLocator
 {
-    IEnumerable<StaticFile> Find(String staticPathRoot);
+    List<StaticFile> Find(String staticPathRoot);
 }

@@ -146,12 +146,14 @@ public class ClassBuilder
                                 .WithInitializer(
                                     EqualsValueClause(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value)))))))
             .WithModifiers(modifiers);
+
         if (!IsGenerated)
         {
             fieldDeclaration = fieldDeclaration.WithGeneratedAttribute();
         }
 
         _class = _class.AddMembers(fieldDeclaration);
+
         return this;
     }
 
