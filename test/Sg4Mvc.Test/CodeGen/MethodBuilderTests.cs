@@ -7,7 +7,7 @@ namespace Sg4Mvc.Test.CodeGen;
 
 public class MethodBuilderTests
 {
-    const String GeneratedNonUserCodeAttribute = "[GeneratedCode(\"Sg4Mvc\",\"1.0\"),DebuggerNonUserCode]";
+    private const String GeneratedNonUserCodeAttribute = "[GeneratedCode(\"Sg4Mvc\",\"1.0\"),DebuggerNonUserCode]";
 
     [Theory]
     [InlineData("VoidMethod", null)]
