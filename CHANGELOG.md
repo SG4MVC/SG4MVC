@@ -1,4 +1,6 @@
 ## SG4MVC Changelog
+- **0.9.5-beta**
+  - Remove unused package reference
 
 - **0.9.4-beta**
   - Prevent warnings about lowercase only class names
