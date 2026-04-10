@@ -1,4 +1,10 @@
 ## SG4MVC Changelog
+- **0.9.6-beta**
+  - Upgrade to .NET 10
+  - Primary constructor support in controllers
+  - Upgrade Microsoft.CodeAnalysis.CSharp to 5.3.0
+  - Use collection expressions and latest C# language features
+
 - **0.9.5-beta**
   - Remove unused package reference
 
