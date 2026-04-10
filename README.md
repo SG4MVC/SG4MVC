@@ -5,7 +5,7 @@ SG4MVC is a source generator for ASP.NET MVC Core apps that creates strongly typ
 
 It is a re-implementation of [R4MVC](https://github.com/T4MVC/R4MVC) using source generators.
 
-R4MVC runs as you build, and currently has only been tested on net6.0
+R4MVC runs as you build, and currently has only been tested on net10.0
 
 ## Get Started?
 
