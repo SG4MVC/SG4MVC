@@ -1,16 +1,23 @@
 using System;
 using System.Diagnostics;
 using AspNetSimple.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 
 namespace AspNetSimple.Controllers;
 
-public partial class HomeController : Controller
+public partial class HomeController(
+    ILogger<HomeController> logger,
+    TimeProvider timeProvider) : Controller
 {
     public virtual IActionResult Index()
     {
         Url.Action(MVC.Home.Index());
+
+        // We need to use the parameters
+        logger.LogInformation("Index action called at {Time}", timeProvider.GetUtcNow());
 
         return View();
     }

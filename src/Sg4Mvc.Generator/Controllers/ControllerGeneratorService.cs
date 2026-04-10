@@ -69,7 +69,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
         // build controller partial class node
         var genControllerClass = new ClassBuilder(controller.Symbol.Name)               // public partial {controllerClass}
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
-            .WithTypeParameters(controller.Symbol.TypeParameters.Select(tp => tp.Name).ToArray()); // optional <T1, T2, …>
+            .WithTypeParameters(controller.Symbol.TypeParameters.Select(tp => tp.Name).ToArray()); // optional <T1, T2, ï¿½>
 
         // add a default constructor if there are some but none are zero length
         var gotCustomConstructors = controller.Symbol.Constructors
@@ -87,14 +87,6 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
                 .WithModifiers(SyntaxKind.PublicKeyword)
                 .WithGeneratedNonUserCodeAttributes());
         }
-
-        /* [GeneratedCode, DebuggerNonUserCode]
-         * public ctor(Dummy d) {}
-         */
-        genControllerClass.WithConstructor(c => c
-            .WithModifiers(SyntaxKind.ProtectedKeyword)
-            .WithGeneratedNonUserCodeAttributes()
-            .WithParameter("d", Constants.DummyClass));
 
         AddRedirectMethods(genControllerClass);
         AddParameterlessMethods(genControllerClass, controller.Symbol, controller.IsSecure);
@@ -169,16 +161,32 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
         /* [GeneratedCode, DebuggerNonUserCode]
          * public partial class Sg4Mvc_{Controller} : {Controller}
          * {
-         *  public Sg4Mvc_{Controller}() : base(Dummy.Instance) {}
+         *  public Sg4Mvc_{Controller}() : base(default!, ...) {}
          * }
          */
+        var baseCtor = controller.Symbol.Constructors
+            .Where(c => c.DeclaredAccessibility == Accessibility.Public)
+            .Where(SyntaxNodeHelpers.IsNotSg4MvcGenerated)
+            .Where(c => !c.IsImplicitlyDeclared)
+            .OrderBy(c => c.Parameters.Length)
+            .FirstOrDefault();
+
         var sg4ControllerClass = new ClassBuilder(className)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
             .WithGeneratedNonUserCodeAttributes()
             .WithBaseTypes(controller.Symbol.ContainingNamespace + "." + controller.Symbol.Name)
-            .WithConstructor(c => c
-                .WithBaseConstructorCall(IdentifierName(Constants.DummyClass + "." + Constants.DummyClassInstance))
-                .WithModifiers(SyntaxKind.PublicKeyword));
+            .WithConstructor(c =>
+            {
+                c.WithModifiers(SyntaxKind.PublicKeyword);
+                if (baseCtor is { Parameters.Length: > 0 })
+                {
+                    c.WithBaseConstructorCall(baseCtor.Parameters
+                        .Select(_ => PostfixUnaryExpression(
+                            SyntaxKind.SuppressNullableWarningExpression,
+                            LiteralExpression(SyntaxKind.DefaultLiteralExpression)))
+                        .ToArray());
+                }
+            });
 
         AddMethodOverrides(sg4ControllerClass, controller.Symbol, controller.IsSecure);
 
@@ -384,7 +392,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
 
             classBuilder
                 /* [NonAction]
-                 * partial void {action}Override({ActionResultType} callInfo, [… params]);
+                 * partial void {action}Override({ActionResultType} callInfo, [ï¿½ params]);
                  */
                 .WithMethod(method.Name + overrideMethodSuffix, null, m => m
                     .WithModifiers(SyntaxKind.PartialKeyword)
@@ -394,7 +402,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
                         .WithParameter(p.Name, p.Type.ToString()))
                     .WithNoBody())
                 /* [NonAction]
-                 * public overrive {ActionResultType} {action}([… params])
+                 * public overrive {ActionResultType} {action}([ï¿½ params])
                  * {
                  *  var callInfo = new Sg4Mvc_Mvc_ActionResult(Area, Name, ActionNames.{Action});
                  *  ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "paramName", paramName);

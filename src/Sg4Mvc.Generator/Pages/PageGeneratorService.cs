@@ -42,14 +42,6 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
                 .WithGeneratedNonUserCodeAttributes());
         }
 
-        /* [GeneratedCode, DebuggerNonUserCode]
-         * public ctor(Dummy d) {}
-         */
-        genControllerClass.WithConstructor(c => c
-            .WithModifiers(SyntaxKind.ProtectedKeyword)
-            .WithGeneratedNonUserCodeAttributes()
-            .WithParameter("d", Constants.DummyClass));
-
         AddRedirectMethods(genControllerClass);
         AddSg4ActionMethods(genControllerClass, pageView.PagePath);
         AddParameterlessMethods(genControllerClass, page.Symbol, page.IsSecure);
@@ -159,18 +151,34 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
         page.FullyQualifiedSg4ClassName = $"{page.Namespace}.{className}";
 
         /* [GeneratedCode, DebuggerNonUserCode]
-         * public partial class Sg4Mvc_{Controller} : {Controller}
+         * public partial class Sg4Mvc_{Page} : {Page}
          * {
-         *  public Sg4Mvc_{Controller}() : base(Dummy.Instance) {}
+         *  public Sg4Mvc_{Page}() : base(default!, ...) {}
          * }
          */
+        var baseCtor = page.Symbol.Constructors
+            .Where(c => c.DeclaredAccessibility == Accessibility.Public)
+            .Where(SyntaxNodeHelpers.IsNotSg4MvcGenerated)
+            .Where(c => !c.IsImplicitlyDeclared)
+            .OrderBy(c => c.Parameters.Length)
+            .FirstOrDefault();
+
         var sg4ControllerClass = new ClassBuilder(className)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
             .WithGeneratedNonUserCodeAttributes()
             .WithBaseTypes(page.Symbol.ContainingNamespace + "." + page.Symbol.Name)
-            .WithConstructor(c => c
-                .WithBaseConstructorCall(IdentifierName(Constants.DummyClass + "." + Constants.DummyClassInstance))
-                .WithModifiers(SyntaxKind.PublicKeyword));
+            .WithConstructor(c =>
+            {
+                c.WithModifiers(SyntaxKind.PublicKeyword);
+                if (baseCtor is { Parameters.Length: > 0 })
+                {
+                    c.WithBaseConstructorCall(baseCtor.Parameters
+                        .Select(_ => PostfixUnaryExpression(
+                            SyntaxKind.SuppressNullableWarningExpression,
+                            LiteralExpression(SyntaxKind.DefaultLiteralExpression)))
+                        .ToArray());
+                }
+            });
         AddMethodOverrides(sg4ControllerClass, page.Symbol, page.IsSecure);
         return sg4ControllerClass.Build();
     }

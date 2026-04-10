@@ -9,9 +9,6 @@ internal static class Constants
 
     internal const String Sg4MvcGeneratedFileName = "Sg4Mvc.generated.cs";
 
-    internal const String DummyClass = "Dummy";
-    internal const String DummyClassInstance = "Instance";
-
     internal const String Sg4MvcHelpersClass = "Sg4MvcHelpers";
     internal const String Sg4MvcHelpers_ProcessVirtualPath = "ProcessVirtualPath";
 

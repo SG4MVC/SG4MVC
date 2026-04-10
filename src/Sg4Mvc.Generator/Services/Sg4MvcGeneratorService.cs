@@ -130,16 +130,8 @@ public class Sg4MvcGeneratorService(
 
         Logging.ReportProgress("Total Pages");
 
-        // Sg4Mvc namespace used for the areas and Dummy class
+        // Sg4Mvc namespace used for the areas
         var sg4Namespace = NamespaceDeclaration(ParseName(settings.Sg4MvcNamespace))
-            // add the dummy class uses in the derived controller partial class
-            /* [GeneratedCode, DebuggerNonUserCode]
-             * public class Dummy
-             * {
-             *  private Dummy() {}
-             *  public static Dummy Instance = new Dummy();
-             * }
-             */
             .AddMembers(CreateViewOnlyControllerClasses(controllers).ToArray<MemberDeclarationSyntax>())
             .AddMembers(CreateAreaClasses(areaControllers).ToArray<MemberDeclarationSyntax>())
             .AddMembers(CreatePagePathClasses(pages, out var topLevelPagePaths).ToArray<MemberDeclarationSyntax>());
