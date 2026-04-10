@@ -135,21 +135,21 @@ public static class DataGroupingService
         var settings = new Settings();
         var fileLocator = new PhysicalFileLocator();
 
-        var viewLocators = new IViewLocator[]
-        {
+        IViewLocator[] viewLocators =
+        [
             new FeatureFolderRazorViewLocator(fileLocator, settings),
             new DefaultRazorViewLocator(fileLocator, settings)
-        };
+        ];
 
-        var pageViewLocators = new IPageViewLocator[]
-        {
+        IPageViewLocator[] pageViewLocators =
+        [
             new DefaultRazorPageViewLocator(fileLocator)
-        };
+        ];
 
-        var staticFileLocators = new IStaticFileLocator[]
-        {
+        IStaticFileLocator[] staticFileLocators =
+        [
             new DefaultStaticFileLocator(fileLocator, settings)
-        };
+        ];
 
         return (viewLocators, pageViewLocators, staticFileLocators);
     }

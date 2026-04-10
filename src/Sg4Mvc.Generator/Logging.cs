@@ -11,8 +11,8 @@ public static class Logging
 
     public static String LogDirectory { get; set; }
 
-    private static List<String> LogEntries { get; } = new List<String>();
-    private static List<(String Description, Int64 elapsed)> StopwatchReports { get; } = new();
+    private static List<String> LogEntries { get; } = [];
+    private static List<(String Description, Int64 elapsed)> StopwatchReports { get; } = [];
 
     [Conditional(Debug)]
     public static void WriteFile()

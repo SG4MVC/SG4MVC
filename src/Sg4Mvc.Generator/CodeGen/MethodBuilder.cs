@@ -12,7 +12,7 @@ public class MethodBuilder
 {
     protected BaseMethodDeclarationSyntax _method;
     private SyntaxKind[] _modifiers = null;
-    private IList<ParameterSyntax> _parameters = new List<ParameterSyntax>();
+    private IList<ParameterSyntax> _parameters = [];
     private BlockSyntax _bodyBlock;
     private ExpressionSyntax _expressionBodySyntax;
     private Boolean _useGeneratedAttributes = false, _useNonActionAttribute = false, _useNonHandlerAttribute = false, _noBody = false;

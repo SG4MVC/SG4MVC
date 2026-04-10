@@ -9,7 +9,7 @@ namespace Sg4Mvc.Generator.CodeGen;
 
 public class BodyBuilder
 {
-    private IList<StatementSyntax> _expressions = new List<StatementSyntax>();
+    private IList<StatementSyntax> _expressions = [];
 
     private static ArgumentListSyntax GetArguments(ICollection<Object> arguments)
     {

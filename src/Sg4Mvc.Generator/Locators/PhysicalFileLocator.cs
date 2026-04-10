@@ -15,7 +15,7 @@ public class PhysicalFileLocator : IFileLocator
     {
         if (!DirectoryExists(parentPath))
         {
-            return new String[0];
+            return [];
         }
 
         return Directory.GetFiles(parentPath, filter, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);

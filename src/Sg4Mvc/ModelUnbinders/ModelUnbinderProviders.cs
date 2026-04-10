@@ -5,7 +5,7 @@ namespace Sg4Mvc.ModelUnbinders;
 
 public class ModelUnbinderProviders
 {
-    private readonly List<IModelUnbinderProvider> _unbinderProviders = new List<IModelUnbinderProvider>();
+    private readonly List<IModelUnbinderProvider> _unbinderProviders = [];
     public virtual void Add(IModelUnbinderProvider unbinderProvider)
     {
         _unbinderProviders.Add(unbinderProvider);

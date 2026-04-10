@@ -17,16 +17,10 @@ public class ModelUnbinderHelpers
     }
 
     private static readonly ModelUnbinders _modelUnbinders = new ModelUnbinders();
-    public static ModelUnbinders ModelUnbinders
-    {
-        get { return _modelUnbinders; }
-    }
+    public static ModelUnbinders ModelUnbinders => _modelUnbinders;
 
     private static readonly ModelUnbinderProviders _modelUnbinderProviders = new ModelUnbinderProviders();
-    public static ModelUnbinderProviders ModelUnbinderProviders
-    {
-        get { return _modelUnbinderProviders; }
-    }
+    public static ModelUnbinderProviders ModelUnbinderProviders => _modelUnbinderProviders;
 
     public static IModelUnbinder DefaultModelUnbinder { get; set; }
     static ModelUnbinderHelpers()

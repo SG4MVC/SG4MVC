@@ -16,7 +16,7 @@ public class ControllerDefinition
 
     public String AreaKey { get; set; }
 
-    public List<View> Views { get; set; } = new();
+    public List<View> Views { get; set; } = [];
 
     private String _fullyQualifiedGeneratedName = null;
 

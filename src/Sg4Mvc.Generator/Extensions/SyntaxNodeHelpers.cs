@@ -84,7 +84,7 @@ public static class SyntaxNodeHelpers
 
     public static void PopulateControllerClassMethodNames(Compilation compilation)
     {
-        var result = new List<String>();
+        List<String> result = [];
         var typeSymbol = compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controller");
         while (typeSymbol != null)
         {
@@ -98,7 +98,7 @@ public static class SyntaxNodeHelpers
         }
         _controllerClassMethodNames = result.Distinct().ToArray();
 
-        result = new List<String>();
+        result = [];
         typeSymbol = compilation.GetTypeByMetadataName(FullTypeNames.PageModel);
         while (typeSymbol != null)
         {
@@ -175,18 +175,17 @@ public static class SyntaxNodeHelpers
         var arguments =
             AttributeArgumentList(
                 SeparatedList(
-                    new[]
-                    {
+                    [
                         AttributeArgument(
                             LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Constants.ProjectName))),
                         AttributeArgument(
                             LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Constants.Version)))
-                    }));
+                    ]));
         return Attribute(IdentifierName("GeneratedCode"), arguments);
     }
 
     public static AttributeListSyntax GeneratedNonUserCodeAttributeList()
-        => AttributeList(SeparatedList(new[] { CreateGeneratedCodeAttribute(), Attribute(IdentifierName("DebuggerNonUserCode")) }));
+        => AttributeList(SeparatedList([CreateGeneratedCodeAttribute(), Attribute(IdentifierName("DebuggerNonUserCode"))]));
 
     public static MethodDeclarationSyntax WithNonActionAttribute(this MethodDeclarationSyntax node)
         => node.AddAttributeLists(AttributeList(SingletonSeparatedList(Attribute(IdentifierName("NonAction")))));
@@ -198,7 +197,7 @@ public static class SyntaxNodeHelpers
         => node.AddAttributeLists(AttributeList(SingletonSeparatedList(CreateGeneratedCodeAttribute())));
 
     public static PropertyDeclarationSyntax WithGeneratedNonUserCodeAttribute(this PropertyDeclarationSyntax node)
-        => node.AddAttributeLists(AttributeList(SeparatedList(new[] { CreateGeneratedCodeAttribute(), Attribute(IdentifierName("DebuggerNonUserCode")) })));
+        => node.AddAttributeLists(AttributeList(SeparatedList([CreateGeneratedCodeAttribute(), Attribute(IdentifierName("DebuggerNonUserCode"))])));
 
     /// TODO: Can this use a aeparated list?
     public static ClassDeclarationSyntax WithModifiers(this ClassDeclarationSyntax node, params SyntaxKind[] modifiers)

@@ -30,7 +30,7 @@ public class FeatureFolderRazorViewLocator(
     {
         if (Settings.FeatureFolders?.Enabled != true)
         {
-            return new List<View>(0);
+            return [];
         }
 
         _allAreasAreFeatureFolders = Settings.FeatureFolders.FeatureOnlyAreas?.Contains("*") == true;
