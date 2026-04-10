@@ -12,16 +12,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Sg4Mvc.Generator.Controllers;
 
-public class ControllerGeneratorService : IControllerGeneratorService
+public class ControllerGeneratorService(Settings settings) : IControllerGeneratorService
 {
     private const String ViewNamesClassName = "_ViewNamesClass";
-
-    private readonly Settings _settings;
-
-    public ControllerGeneratorService(Settings settings)
-    {
-        _settings = settings;
-    }
 
     public String GetControllerArea(INamedTypeSymbol controllerSymbol)
     {
@@ -107,8 +100,8 @@ public class ControllerGeneratorService : IControllerGeneratorService
         AddParameterlessMethods(genControllerClass, controller.Symbol, controller.IsSecure);
 
         var actionsExpression = controller.AreaKey != null
-            ? _settings.HelpersPrefix + "." + controller.AreaKey + "." + controller.Name
-            : _settings.HelpersPrefix + "." + controller.Name;
+            ? settings.HelpersPrefix + "." + controller.AreaKey + "." + controller.Name
+            : settings.HelpersPrefix + "." + controller.Name;
         var controllerMethods = controller.Symbol.GetPublicNonGeneratedControllerMethods().ToArray();
         var controllerMethodNames = controllerMethods.Select(m => m.Name).Distinct().ToArray();
         genControllerClass
@@ -151,11 +144,11 @@ public class ControllerGeneratorService : IControllerGeneratorService
          *  public readonly string model = "model";
          * }
          */
-        if (_settings.GenerateParamsForActionMethods)
+        if (settings.GenerateParamsForActionMethods)
         {
             genControllerClass
                 .ForEach(controllerMethods.Where(m => m.Parameters.Any()), (c, m) => c
-                    .WithStaticFieldBackedProperty(m.Name + _settings.ParamsPropertySuffix, $"ActionParamsClass_{m.Name}", SyntaxKind.PublicKeyword)
+                    .WithStaticFieldBackedProperty(m.Name + settings.ParamsPropertySuffix, $"ActionParamsClass_{m.Name}", SyntaxKind.PublicKeyword)
                     .WithChildClass($"ActionParamsClass_{m.Name}", ac => ac
                         .WithModifiers(SyntaxKind.PublicKeyword)
                         .WithGeneratedNonUserCodeAttributes()

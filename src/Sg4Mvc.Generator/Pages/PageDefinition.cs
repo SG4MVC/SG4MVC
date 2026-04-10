@@ -6,27 +6,18 @@ using Microsoft.CodeAnalysis;
 
 namespace Sg4Mvc.Generator.Pages;
 
-public class PageDefinition
+public class PageDefinition(String cNamespace,
+    String name,
+    Boolean isSecure,
+    INamedTypeSymbol symbol,
+    List<String> filePaths)
 {
-    public PageDefinition(String cNamespace,
-        String name,
-        Boolean isSecure,
-        INamedTypeSymbol symbol,
-        List<String> filePaths)
-    {
-        Namespace = cNamespace;
-        Name = name;
-        IsSecure = isSecure;
-        Symbol = symbol;
-        FilePaths = filePaths;
-    }
+    public String Namespace { get; } = cNamespace;
+    public String Name { get; } = name;
+    public Boolean IsSecure { get; } = isSecure;
+    public INamedTypeSymbol Symbol { get; } = symbol;
 
-    public String Namespace { get; }
-    public String Name { get; }
-    public Boolean IsSecure { get; }
-    public INamedTypeSymbol Symbol { get; }
-
-    public IList<String> FilePaths { get; set; }
+    public IList<String> FilePaths { get; set; } = filePaths;
 
     private String _fullyQualifiedGeneratedName = null;
     public String FullyQualifiedGeneratedName

@@ -9,17 +9,11 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Sg4Mvc.Generator.CodeGen;
 
-public class ClassBuilder
+public class ClassBuilder(String className)
 {
-    private ClassDeclarationSyntax _class;
+    private ClassDeclarationSyntax _class = ClassDeclaration(className);
 
-    public ClassBuilder(String className)
-    {
-        Name = className;
-        _class = ClassDeclaration(className);
-    }
-
-    public String Name { get; }
+    public String Name { get; } = className;
     public Boolean IsGenerated { get; private set; }
 
     public ClassBuilder WithComment(String comment)

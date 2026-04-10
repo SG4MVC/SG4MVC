@@ -12,26 +12,20 @@ using Sg4Mvc.Generator.Services.Interfaces;
 
 namespace Sg4Mvc.Generator.Services;
 
-public class StaticFileGeneratorService : IStaticFileGeneratorService
+public class StaticFileGeneratorService(
+    IStaticFileLocator staticFileLocator,
+    Settings settings)
+    : IStaticFileGeneratorService
 {
-    private readonly IStaticFileLocator _staticFileLocator;
-    private readonly Settings _settings;
-
-    public StaticFileGeneratorService(IStaticFileLocator staticFileLocator, Settings settings)
-    {
-        _staticFileLocator = staticFileLocator;
-        _settings = settings;
-    }
-
     public MemberDeclarationSyntax GenerateStaticFiles(String projectRoot)
     {
         var staticFilesRoot = GetStaticFilesPath(projectRoot);
         Logging.ReportProgress("GetStaticFilesPath");
 
-        var staticfiles = _staticFileLocator.Find(staticFilesRoot);
+        var staticfiles = staticFileLocator.Find(staticFilesRoot);
         Logging.ReportProgress("_staticFileLocator.Find");
 
-        var linksClass = new ClassBuilder(_settings.LinksNamespace)
+        var linksClass = new ClassBuilder(settings.LinksNamespace)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword)
             .WithGeneratedNonUserCodeAttributes();
         Logging.ReportProgress("create linksClass");
@@ -56,7 +50,7 @@ public class StaticFileGeneratorService : IStaticFileGeneratorService
     }
 
     // This will eventually read the Startup class, to identify the location(s) of the static roots
-    public String GetStaticFilesPath(String projectRoot) => Path.Combine(projectRoot, _settings.StaticFilesPath);
+    public String GetStaticFilesPath(String projectRoot) => Path.Combine(projectRoot, settings.StaticFilesPath);
 
     private void AddUrlFields(ClassBuilder builder, String path)
     {

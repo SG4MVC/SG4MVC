@@ -6,18 +6,11 @@ using Sg4Mvc.Generator.Pages;
 
 namespace Sg4Mvc.Generator.Locators;
 
-public class DefaultRazorPageViewLocator : IPageViewLocator
+public class DefaultRazorPageViewLocator(
+    IFileLocator fileLocator)
+    : IPageViewLocator
 {
     protected const String PagesFolder = "Pages";
-
-    private readonly IFileLocator _fileLocator;
-    private readonly Settings _settings;
-
-    public DefaultRazorPageViewLocator(IFileLocator fileLocator, Settings settings)
-    {
-        _fileLocator = fileLocator;
-        _settings = settings;
-    }
 
     public IEnumerable<PageView> Find(String workingDirectory)
     {
@@ -25,7 +18,7 @@ public class DefaultRazorPageViewLocator : IPageViewLocator
 
         if (Directory.Exists(pagesRoot))
         {
-            foreach (var filePath in _fileLocator.GetFiles(pagesRoot, "*.cshtml", recurse: true))
+            foreach (var filePath in fileLocator.GetFiles(pagesRoot, "*.cshtml", recurse: true))
             {
                 yield return GetView(workingDirectory, pagesRoot, filePath);
             }

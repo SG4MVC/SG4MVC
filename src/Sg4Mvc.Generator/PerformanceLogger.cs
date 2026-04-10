@@ -3,19 +3,12 @@ using System.Diagnostics;
 
 namespace Sg4Mvc.Generator;
 
-public class PerformanceLogger : IDisposable
+public class PerformanceLogger(String description) : IDisposable
 {
-    public PerformanceLogger(String description)
-    {
-        Description = description;
-        Stopwatch = Stopwatch.StartNew();
-    }
-
-    private String Description { get; }
-    private Stopwatch Stopwatch { get; }
+    private Stopwatch Stopwatch { get; } = Stopwatch.StartNew();
 
     public void Dispose()
     {
-        Logging.ReportStopwatch(Description, Stopwatch);
+        Logging.ReportStopwatch(description, Stopwatch);
     }
 }

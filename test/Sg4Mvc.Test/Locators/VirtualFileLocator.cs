@@ -4,14 +4,8 @@ using Sg4Mvc.Generator.Locators;
 
 namespace Sg4Mvc.Test.Locators;
 
-class VirtualFileLocator : IFileLocator
+class VirtualFileLocator(String[] paths) : IFileLocator
 {
-    private readonly String[] _paths;
-    public VirtualFileLocator(String[] paths)
-    {
-        _paths = paths;
-    }
-
     public const String ProjectRoot = @"D:\Project";
     public const String ProjectRoot_wwwroot = @"D:\Project\wwwroot";
 
@@ -42,10 +36,10 @@ class VirtualFileLocator : IFileLocator
         });
 
     public Boolean DirectoryExists(String path)
-        => _paths.Any(p => p.StartsWith(path.TrimEnd('\\') + "\\"));
+        => paths.Any(p => p.StartsWith(path.TrimEnd('\\') + "\\"));
 
     public String[] GetDirectories(String parentPath)
-        => _paths
+        => paths
             .Where(p => p.StartsWith(parentPath))
             .Where(p => p.Substring(parentPath.Length).TrimStart('\\').Count(c => c == '\\') >= 1)
             .Select(p => p.Substring(0, p.Substring(parentPath.Length + 1).IndexOf('\\') + parentPath.Length + 1))
@@ -53,7 +47,7 @@ class VirtualFileLocator : IFileLocator
             .ToArray();
 
     public String[] GetFiles(String parentPath, String filter, Boolean recurse = false)
-        => _paths
+        => paths
             .Where(p => p.StartsWith(parentPath))
             .Where(p =>
             {

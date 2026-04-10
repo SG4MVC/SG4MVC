@@ -6,13 +6,11 @@ using Path = System.IO.Path;
 
 namespace Sg4Mvc.Generator.Locators;
 
-public class FeatureFolderRazorViewLocator : DefaultRazorViewLocator
+public class FeatureFolderRazorViewLocator(
+    IFileLocator fileLocator,
+    Settings settings)
+    : DefaultRazorViewLocator(fileLocator, settings)
 {
-    public FeatureFolderRazorViewLocator(IFileLocator fileLocator, Settings settings)
-        : base(fileLocator, settings)
-    {
-    }
-
     private Boolean _allAreasAreFeatureFolders = false;
 
     protected override String GetViewsRoot(String projectRoot)

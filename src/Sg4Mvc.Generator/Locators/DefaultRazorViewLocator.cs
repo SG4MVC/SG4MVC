@@ -6,19 +6,15 @@ using Path = System.IO.Path;
 
 namespace Sg4Mvc.Generator.Locators;
 
-public class DefaultRazorViewLocator : IViewLocator
+public class DefaultRazorViewLocator(
+    IFileLocator fileLocator,
+    Settings settings)
+    : IViewLocator
 {
     protected const String ViewsFolder = "Views";
     protected const String AreasFolder = "Areas";
 
-    public DefaultRazorViewLocator(IFileLocator fileLocator, Settings settings)
-    {
-        FileLocator = fileLocator;
-        Settings = settings;
-    }
-
-    private IFileLocator FileLocator { get; }
-    protected Settings Settings { get; }
+    protected Settings Settings { get; } = settings;
 
     protected virtual String GetViewsRoot(String projectRoot)
     {
@@ -34,7 +30,7 @@ public class DefaultRazorViewLocator : IViewLocator
     {
         foreach (var (Area, Controller, Path) in FindControllerViewFolders(workingDirectory))
         {
-            if (!FileLocator.DirectoryExists(Path))
+            if (!fileLocator.DirectoryExists(Path))
             {
                 continue;
             }
@@ -47,9 +43,9 @@ public class DefaultRazorViewLocator : IViewLocator
     protected IEnumerable<(String Area, String Controller, String Path)> FindControllerViewFolders(String projectRoot)
     {
         var viewsRoot = GetViewsRoot(projectRoot);
-        if (FileLocator.DirectoryExists(viewsRoot))
+        if (fileLocator.DirectoryExists(viewsRoot))
         {
-            foreach (var controllerPath in FileLocator.GetDirectories(viewsRoot))
+            foreach (var controllerPath in fileLocator.GetDirectories(viewsRoot))
             {
                 var controllerName = Path.GetFileName(controllerPath);
                 yield return (String.Empty, controllerName, controllerPath);
@@ -57,15 +53,15 @@ public class DefaultRazorViewLocator : IViewLocator
         }
 
         var areasPath = Path.Combine(projectRoot, AreasFolder);
-        if (FileLocator.DirectoryExists(areasPath))
+        if (fileLocator.DirectoryExists(areasPath))
         {
-            foreach (var areaRoot in FileLocator.GetDirectories(areasPath))
+            foreach (var areaRoot in fileLocator.GetDirectories(areasPath))
             {
                 var areaName = Path.GetFileName(areaRoot);
                 viewsRoot = GetAreaViewsRoot(areaRoot, areaName);
-                if (FileLocator.DirectoryExists(viewsRoot))
+                if (fileLocator.DirectoryExists(viewsRoot))
                 {
-                    foreach (var controllerPath in FileLocator.GetDirectories(viewsRoot))
+                    foreach (var controllerPath in fileLocator.GetDirectories(viewsRoot))
                     {
                         var controllerName = Path.GetFileName(controllerPath);
                         yield return (areaName, controllerName, controllerPath);
@@ -77,14 +73,14 @@ public class DefaultRazorViewLocator : IViewLocator
 
     protected virtual IEnumerable<View> FindViews(String projectRoot, String areaName, String controllerName, String controllerPath)
     {
-        foreach (var file in FileLocator.GetFiles(controllerPath, "*.cshtml"))
+        foreach (var file in fileLocator.GetFiles(controllerPath, "*.cshtml"))
         {
             yield return GetView(projectRoot, file, controllerName, areaName);
         }
 
-        foreach (var directory in FileLocator.GetDirectories(controllerPath))
+        foreach (var directory in fileLocator.GetDirectories(controllerPath))
         {
-            foreach (var file in FileLocator.GetFiles(directory, "*.cshtml"))
+            foreach (var file in fileLocator.GetFiles(directory, "*.cshtml"))
             {
                 yield return GetView(projectRoot, file, controllerName, areaName, Path.GetFileName(directory));
             }

@@ -143,7 +143,7 @@ public static class DataGroupingService
 
         var pageViewLocators = new IPageViewLocator[]
         {
-            new DefaultRazorPageViewLocator(fileLocator, settings)
+            new DefaultRazorPageViewLocator(fileLocator)
         };
 
         var staticFileLocators = new IStaticFileLocator[]

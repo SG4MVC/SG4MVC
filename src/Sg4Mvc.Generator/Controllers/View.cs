@@ -2,24 +2,15 @@ using System;
 
 namespace Sg4Mvc.Generator.Controllers;
 
-public class View : IView
+public class View(String areaName,
+    String controllerName,
+    String viewName,
+    Uri relativePath,
+    String templateKind) : IView
 {
-    public View(String areaName,
-        String controllerName,
-        String viewName,
-        Uri relativePath,
-        String templateKind)
-    {
-        AreaName = areaName;
-        ControllerName = controllerName;
-        Name = viewName;
-        RelativePath = relativePath;
-        TemplateKind = templateKind;
-    }
-
-    public String AreaName { get; }
-    public String ControllerName { get; }
-    public String Name { get; }
-    public Uri RelativePath { get; }
-    public String TemplateKind { get; set; }
+    public String AreaName { get; } = areaName;
+    public String ControllerName { get; } = controllerName;
+    public String Name { get; } = viewName;
+    public Uri RelativePath { get; } = relativePath;
+    public String TemplateKind { get; set; } = templateKind;
 }

@@ -12,16 +12,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Sg4Mvc.Generator.Pages;
 
-public class PageGeneratorService : IPageGeneratorService
+public class PageGeneratorService(Settings settings) : IPageGeneratorService
 {
     private const String ViewNamesClassName = "_ViewNamesClass";
-
-    private readonly Settings _settings;
-
-    public PageGeneratorService(Settings settings)
-    {
-        _settings = settings;
-    }
 
     public ClassDeclarationSyntax GeneratePartialPage(PageView pageView)
     {
@@ -107,11 +100,11 @@ public class PageGeneratorService : IPageGeneratorService
          *  public readonly string param2 = "param2";
          * }
          */
-        if (_settings.GenerateParamsForActionMethods)
+        if (settings.GenerateParamsForActionMethods)
         {
             genControllerClass
                 .ForEach(handlerMethods.Where(m => m.Parameters.Any()), (c, m) => c
-                    .WithStaticFieldBackedProperty(m.Name + _settings.ParamsPropertySuffix, $"HandlerParamsClass_{m.Name}", SyntaxKind.PublicKeyword)
+                    .WithStaticFieldBackedProperty(m.Name + settings.ParamsPropertySuffix, $"HandlerParamsClass_{m.Name}", SyntaxKind.PublicKeyword)
                     .WithChildClass($"HandlerParamsClass_{m.Name}", ac => ac
                         .WithModifiers(SyntaxKind.PublicKeyword)
                         .WithGeneratedNonUserCodeAttributes()
@@ -119,7 +112,7 @@ public class PageGeneratorService : IPageGeneratorService
                             .WithStringField(p.Name, p.GetRouteName(), SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword))));
         }
 
-        if (_settings.GeneratePageViewsClass)
+        if (settings.GeneratePageViewsClass)
         {
             WithViewsClass(genControllerClass, new List<PageView> { pageView });
         }

@@ -4,23 +4,17 @@ using System.Linq;
 
 namespace Sg4Mvc.Generator.Locators;
 
-public class DefaultStaticFileLocator : IStaticFileLocator
+public class DefaultStaticFileLocator(
+    IFileLocator fileLocator,
+    Settings settings)
+    : IStaticFileLocator
 {
-    public DefaultStaticFileLocator(IFileLocator fileLocator, Settings settings)
-    {
-        _fileLocator = fileLocator;
-        _settings = settings;
-    }
-
-    private readonly IFileLocator _fileLocator;
-    private readonly Settings _settings;
-
     public List<StaticFile> Find(String staticPathRoot)
     {
-        var files = _fileLocator.GetFiles(staticPathRoot, "*", recurse: true).AsEnumerable();
-        if (_settings.ExcludedStaticFileExtensions?.Length > 0)
+        var files = fileLocator.GetFiles(staticPathRoot, "*", recurse: true).AsEnumerable();
+        if (settings.ExcludedStaticFileExtensions?.Length > 0)
         {
-            files = files.Where(f => !_settings.ExcludedStaticFileExtensions.Any(e => f.EndsWith(e)));
+            files = files.Where(f => !settings.ExcludedStaticFileExtensions.Any(e => f.EndsWith(e)));
         }
 
         if (!staticPathRoot.EndsWith("/"))
