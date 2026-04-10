@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/.solution/">
+    <File Path=".editorconfig" />
+    <File Path="CHANGELOG.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/AspNetFeatureFolders/AspNetFeatureFolders.csproj" />
+    <Project Path="samples/AspNetSimple/AspNetSimple.csproj" />
+    <Project Path="samples/SampleModels/SampleModels.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Sg4Mvc.Generator/Sg4Mvc.Generator.csproj" />
+    <Project Path="src/Sg4Mvc/Sg4Mvc.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/AspNetSimple.Test/AspNetSimple.Test.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+    <Project Path="test/Sg4Mvc.Test/Sg4Mvc.Test.csproj">
+      <Build Solution="Release|*" Project="false" />
+    </Project>
+  </Folder>
+</Solution>
