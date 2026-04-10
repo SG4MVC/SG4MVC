@@ -21,16 +21,11 @@ public class MethodBuilderTests
     }
 
     [Theory]
-    [InlineData(null)]
+    [InlineData([])]
     [InlineData(SyntaxKind.PublicKeyword)]
     [InlineData(SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword)]
     public void Method_Modifiers(params SyntaxKind[] modifiers)
     {
-        if (modifiers == null)
-        {
-            modifiers = Array.Empty<SyntaxKind>();
-        }
-
         var result = new MethodBuilder("MethodName")
             .WithModifiers(modifiers)
             .Build();
