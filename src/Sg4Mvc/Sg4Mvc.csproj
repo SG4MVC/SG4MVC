@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0</TargetFrameworks>
+		<TargetFrameworks>net10.0</TargetFrameworks>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>1701;1702;1591</NoWarn>
 		<LangVersion>10</LangVersion>
@@ -43,7 +43,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(OutputPath)\net6.0\Sg4Mvc.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<None Include="$(OutputPath)\net10.0\Sg4Mvc.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
 </Project>

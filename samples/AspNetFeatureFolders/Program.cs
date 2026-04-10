@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Sg4Mvc;
 
 [assembly: GenerateSg4Mvc]
@@ -11,10 +11,11 @@ public class Program
 {
     public static void Main(String[] args)
     {
-        CreateWebHostBuilder(args).Build().Run();
+        CreateHostBuilder(args).Build().Run();
     }
 
-    public static IWebHostBuilder CreateWebHostBuilder(String[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
+    public static IHostBuilder CreateHostBuilder(String[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(b => b
+                .UseStartup<Startup>());
 }
