@@ -11,9 +11,8 @@ public class DefaultRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void BasicProject()
     {
         var locator = new DefaultRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Collection(locator.Find(workingDirectory),
+        Assert.Collection(locator.Find(VirtualFileLocator.ProjectRoot),
             v => AssertView(v, "", "EditorTemplates", "User", null, "~/Views/EditorTemplates/User.cshtml"),
             v => AssertView(v, "", "Users", "Index", null, "~/Views/Users/Index.cshtml"),
             v => AssertView(v, "", "Users", "Details", null, "~/Views/Users/Details.cshtml"),
@@ -29,9 +28,8 @@ public class DefaultRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void AreaAsProjectPath()
     {
         var locator = new DefaultRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Collection(locator.Find(workingDirectory),
+        Assert.Collection(locator.Find(@"D:\Project\Areas\Admin"),
             v => AssertView(v, "", "Home", "Index", null, "~/Views/Home/Index.cshtml"),
             v => AssertView(v, "", "Shared", "_Layout", null, "~/Views/Shared/_Layout.cshtml"),
             v => AssertView(v, "", "Shared", "User", "EditorTemplates", "~/Views/Shared/EditorTemplates/User.cshtml")
@@ -47,8 +45,7 @@ public class DefaultRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void WrongProjectPaths(String path)
     {
         var locator = new DefaultRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Empty(locator.Find(workingDirectory));
+        Assert.Empty(locator.Find(path));
     }
 }

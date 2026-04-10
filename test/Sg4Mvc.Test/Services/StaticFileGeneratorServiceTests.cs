@@ -16,7 +16,8 @@ public class StaticFileGeneratorServiceTests
     public void CreateLinks()
     {
         var settings = new Settings();
-        var staticFileGeneratorService = new StaticFileGeneratorService(null, settings);
+        var staticFileLocator = new DefaultStaticFileLocator(VirtualFileLocator.Default, settings);
+        var staticFileGeneratorService = new StaticFileGeneratorService(staticFileLocator, settings);
 
         var result = staticFileGeneratorService.GenerateStaticFiles(VirtualFileLocator.ProjectRoot);
 

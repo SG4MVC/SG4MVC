@@ -11,9 +11,8 @@ public class FeatureFolderRazorViewLocatorTests : RazorViewLocatorTestsBase
     public void FeatureFolders_Disabled()
     {
         var locator = new FeatureFolderRazorViewLocator(VirtualFileLocator.Default, new Settings());
-        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Empty(locator.Find(workingDirectory));
+        Assert.Empty(locator.Find(VirtualFileLocator.ProjectRoot));
     }
 
     [Fact]
@@ -23,9 +22,8 @@ public class FeatureFolderRazorViewLocatorTests : RazorViewLocatorTestsBase
         {
             FeatureFolders = new Settings.FeatureFoldersClass { Enabled = true }
         });
-        var workingDirectory = Guid.NewGuid().ToString();
 
-        Assert.Collection(locator.Find(workingDirectory),
+        Assert.Collection(locator.Find(VirtualFileLocator.ProjectRoot),
             v => AssertView(v, "", "Users", "Index", null, "~/Features/Users/Index.cshtml"),
             v => AssertView(v, "", "Users", "Details", null, "~/Features/Users/Details.cshtml"),
             v => AssertView(v, "Admin", "Home", "Index", null, "~/Areas/Admin/Features/Home/Index.cshtml")

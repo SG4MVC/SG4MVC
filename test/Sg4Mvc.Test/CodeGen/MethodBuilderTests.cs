@@ -21,7 +21,7 @@ public class MethodBuilderTests
     }
 
     [Theory]
-    [InlineData([])]
+    [InlineData(new SyntaxKind[0])]
     [InlineData(SyntaxKind.PublicKeyword)]
     [InlineData(SyntaxKind.PrivateKeyword, SyntaxKind.StaticKeyword)]
     public void Method_Modifiers(params SyntaxKind[] modifiers)
