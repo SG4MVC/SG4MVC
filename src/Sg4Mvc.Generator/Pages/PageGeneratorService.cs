@@ -166,6 +166,7 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
         var sg4ControllerClass = new ClassBuilder(className)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
             .WithGeneratedNonUserCodeAttributes()
+            .WithNonControllerAttribute()
             .WithBaseTypes(page.Symbol.ContainingNamespace + "." + page.Symbol.Name)
             .WithConstructor(c =>
             {

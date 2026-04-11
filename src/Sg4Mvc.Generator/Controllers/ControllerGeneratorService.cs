@@ -174,6 +174,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
         var sg4ControllerClass = new ClassBuilder(className)
             .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
             .WithGeneratedNonUserCodeAttributes()
+            .WithNonControllerAttribute()
             .WithBaseTypes(controller.Symbol.ContainingNamespace + "." + controller.Symbol.Name)
             .WithConstructor(c =>
             {

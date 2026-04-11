@@ -93,6 +93,13 @@ public class ClassBuilder(String className)
         return this;
     }
 
+    public ClassBuilder WithNonControllerAttribute()
+    {
+        _class = _class.AddAttributeLists(
+            AttributeList(SingletonSeparatedList(Attribute(IdentifierName("NonController")))));
+        return this;
+    }
+
     public ClassBuilder WithProperty(String name, String type, SyntaxKind modifier = SyntaxKind.PublicKeyword)
     {
         var prop = PropertyDeclaration(IdentifierName(type), name)
