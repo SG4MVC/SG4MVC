@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-#if !CORE1
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-#endif
 
 namespace Microsoft.AspNetCore.Mvc.Rendering
 {
@@ -54,7 +52,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             return htmlHelper.RouteLink(linkText, null, result, htmlAttributes, protocol, hostName, fragment);
         }
 
-#if !CORE1
         public static IHtmlContent ActionLink(this IHtmlHelper htmlHelper, String linkText, IConvertToActionResult result, Object htmlAttributes = null, String protocol = null, String hostName = null, String fragment = null)
         {
             return htmlHelper.ActionLink(linkText, result.Convert(), htmlAttributes, protocol, hostName, fragment);
@@ -64,7 +61,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         {
             return htmlHelper.ActionLink(linkText, result.Convert(), htmlAttributes, protocol, hostName, fragment);
         }
-#endif
         #endregion
 
         #region RouteLink
@@ -142,7 +138,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             return htmlHelper.RouteLink(linkText, routeName, protocol ?? result.Protocol, hostName, fragment, result.RouteValueDictionary, htmlAttributes);
         }
 
-#if !CORE1
         public static IHtmlContent RouteLink(this IHtmlHelper htmlHelper, String linkText, IConvertToActionResult result, Object htmlAttributes)
         {
             return htmlHelper.RouteLink(linkText, result.Convert(), htmlAttributes);
@@ -162,7 +157,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         {
             return htmlHelper.RouteLink(linkText, routeName, result.Convert(), htmlAttributes, protocol, hostName, fragment);
         }
-#endif
         #endregion
 
         #region AutoNamedRouteLink
@@ -199,7 +193,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             return htmlHelper.AutoNamedRouteLink(linkText, result.GetActionResult(), htmlAttributes, protocol, hostName, fragment);
         }
 
-#if !CORE1
         public static IHtmlContent AutoNamedRouteLink(this IHtmlHelper htmlHelper, String linkText, IConvertToActionResult result, Object htmlAttributes = null, String protocol = null, String hostName = null, String fragment = null)
         {
             return htmlHelper.AutoNamedRouteLink(linkText, result.Convert(), htmlAttributes, protocol, hostName, fragment);
@@ -209,7 +202,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         {
             return htmlHelper.AutoNamedRouteLink(linkText, result.Convert(), htmlAttributes, protocol, hostName, fragment);
         }
-#endif
         #endregion
 
         #region BeginForm
@@ -250,7 +242,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             return htmlHelper.BeginRouteForm(null, result, formMethod, htmlAttributes);
         }
 
-#if !CORE1
         public static MvcForm BeginForm(this IHtmlHelper htmlHelper, IConvertToActionResult result, FormMethod formMethod, Object htmlAttributes)
         {
             return BeginForm(htmlHelper, result.Convert(), formMethod, htmlAttributes);
@@ -260,7 +251,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         {
             return BeginForm(htmlHelper, result.Convert(), formMethod, htmlAttributes);
         }
-#endif
         #endregion
 
         #region BeginRouteForm
@@ -317,7 +307,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             return htmlHelper.BeginRouteForm(routeName, result.RouteValueDictionary, formMethod, null, htmlAttributes);
         }
 
-#if !CORE1
         public static MvcForm BeginRouteForm(this IHtmlHelper htmlHelper, IConvertToActionResult result)
         {
             return htmlHelper.BeginRouteForm(result.Convert());
@@ -332,7 +321,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         {
             return htmlHelper.BeginRouteForm(routeName, result.Convert(), formMethod, htmlAttributes);
         }
-#endif
         #endregion
 
         private static String AutoRouteNameFromActionResult(IActionResult result)

@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
-#if !CORE1
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-#endif
 
 namespace Sg4Mvc.TagHelpers
 {
@@ -44,12 +42,10 @@ namespace Sg4Mvc.TagHelpers
             output.Attributes.RemoveAll(ActionAttribute);
             var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
 
-#if !CORE1
             if (ObjectAction is IConvertToActionResult convertToActionResult)
             {
                 ObjectAction = convertToActionResult.Convert();
             }
-#endif
             RouteValueDictionary routeValues = null;
             switch (ObjectAction)
             {
