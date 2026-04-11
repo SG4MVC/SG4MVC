@@ -8,6 +8,9 @@ namespace Sg4Mvc.Generator.Extensions;
 
 public static class SimpleExtensions
 {
+    private static readonly Regex InvalidIdentifierCharsRegex = new(@"[\W\b]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex LeadingDigitRegex = new(@"^\d", RegexOptions.Compiled);
+
     public static String GetWorkingDirectory(this AnalyzerConfigOptionsProvider optionsProvider)
     {
         optionsProvider.GlobalOptions
@@ -33,8 +36,8 @@ public static class SimpleExtensions
 
     public static String SanitiseFieldName(this String name)
     {
-        name = Regex.Replace(name, @"[\W\b]", "_", RegexOptions.IgnoreCase);
-        name = Regex.Replace(name, @"^\d", @"_$0");
+        name = InvalidIdentifierCharsRegex.Replace(name, "_");
+        name = LeadingDigitRegex.Replace(name, @"_$0");
 
         Int32 i = 0;
         while (SyntaxFacts.GetKeywordKind(name) != SyntaxKind.None ||
