@@ -150,11 +150,22 @@ public class Sg4MvcGeneratorService(
 
         foreach (var controller in areaControllers[String.Empty].OrderBy(c => c.Namespace == null).ThenBy(c => c.Name))
         {
-            mvcStaticClass.WithField(
-                controller.Name,
-                controller.FullyQualifiedGeneratedName,
-                controller.FullyQualifiedSg4ClassName ?? controller.FullyQualifiedGeneratedName,
-                SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            if (controller.FullyQualifiedSg4ClassName != null)
+            {
+                mvcStaticClass.WithUninitializedObjectField(
+                    controller.Name,
+                    controller.FullyQualifiedGeneratedName,
+                    controller.FullyQualifiedSg4ClassName,
+                    SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            }
+            else
+            {
+                mvcStaticClass.WithField(
+                    controller.Name,
+                    controller.FullyQualifiedGeneratedName,
+                    controller.FullyQualifiedGeneratedName,
+                    SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            }
         }
 
         new CodeFileBuilder(settings, true)
@@ -176,11 +187,22 @@ public class Sg4MvcGeneratorService(
 
         foreach (var page in pages.Where(p => p.Segments.Length == 0))
         {
-            mvcPagesStaticClass.WithField(
-                page.Name,
-                page.Definition.FullyQualifiedGeneratedName,
-                page.Definition.FullyQualifiedSg4ClassName ?? page.Definition.FullyQualifiedGeneratedName,
-                SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            if (page.Definition.FullyQualifiedSg4ClassName != null)
+            {
+                mvcPagesStaticClass.WithUninitializedObjectField(
+                    page.Name,
+                    page.Definition.FullyQualifiedGeneratedName,
+                    page.Definition.FullyQualifiedSg4ClassName,
+                    SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            }
+            else
+            {
+                mvcPagesStaticClass.WithField(
+                    page.Name,
+                    page.Definition.FullyQualifiedGeneratedName,
+                    page.Definition.FullyQualifiedGeneratedName,
+                    SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
+            }
         }
 
         new CodeFileBuilder(settings, true)
@@ -270,12 +292,25 @@ public class Sg4MvcGeneratorService(
                 .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
                 .WithGeneratedNonUserCodeAttributes()
                 .WithStringField("Name", area.Key, SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword)
-                .ForEach(area.OrderBy(c => c.Namespace == null).ThenBy(c => c.Name), (cb, c) => cb
-                    .WithField(
-                        c.Name,
-                        c.FullyQualifiedGeneratedName,
-                        c.FullyQualifiedSg4ClassName ?? c.FullyQualifiedGeneratedName,
-                        SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword));
+                .ForEach(area.OrderBy(c => c.Namespace == null).ThenBy(c => c.Name), (cb, c) =>
+                {
+                    if (c.FullyQualifiedSg4ClassName != null)
+                    {
+                        cb.WithUninitializedObjectField(
+                            c.Name,
+                            c.FullyQualifiedGeneratedName,
+                            c.FullyQualifiedSg4ClassName,
+                            SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword);
+                    }
+                    else
+                    {
+                        cb.WithField(
+                            c.Name,
+                            c.FullyQualifiedGeneratedName,
+                            c.FullyQualifiedGeneratedName,
+                            SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword);
+                    }
+                });
 
             yield return areaClass.Build();
         }
@@ -314,12 +349,25 @@ public class Sg4MvcGeneratorService(
             var pathClass = new ClassBuilder(key + "PathClass")
                 .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.PartialKeyword)
                 .WithGeneratedNonUserCodeAttributes()
-                .ForEach(pageGroups[key].OrderBy(p => p.Name), (cb, p) => cb
-                    .WithField(
-                        p.Name,
-                        p.Definition.FullyQualifiedGeneratedName,
-                        p.Definition.FullyQualifiedSg4ClassName ?? p.Definition.FullyQualifiedGeneratedName,
-                        SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword));
+                .ForEach(pageGroups[key].OrderBy(p => p.Name), (cb, p) =>
+                {
+                    if (p.Definition.FullyQualifiedSg4ClassName != null)
+                    {
+                        cb.WithUninitializedObjectField(
+                            p.Name,
+                            p.Definition.FullyQualifiedGeneratedName,
+                            p.Definition.FullyQualifiedSg4ClassName,
+                            SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword);
+                    }
+                    else
+                    {
+                        cb.WithField(
+                            p.Name,
+                            p.Definition.FullyQualifiedGeneratedName,
+                            p.Definition.FullyQualifiedGeneratedName,
+                            SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword);
+                    }
+                });
 
             pathClasses.Add(key, pathClass);
         }

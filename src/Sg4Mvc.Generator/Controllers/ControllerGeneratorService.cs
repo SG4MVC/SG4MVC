@@ -98,8 +98,8 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
         var controllerMethodNames = controllerMethods.Select(m => m.Name).Distinct().ToArray();
         genControllerClass
             .WithExpressionProperty("Actions", controller.Symbol.Name, actionsExpression, SyntaxKind.PublicKeyword)
-            .WithStringField("Area", controller.Area, SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword)
-            .WithStringField("Name", controller.Name, SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword)
+            .WithStringExpressionProperty("Area", controller.Area, SyntaxKind.PublicKeyword)
+            .WithStringExpressionProperty("Name", controller.Name, SyntaxKind.PublicKeyword)
             .WithStringField("NameConst", controller.Name, SyntaxKind.PublicKeyword, SyntaxKind.ConstKeyword)
             .WithStaticFieldBackedProperty("ActionNames", "ActionNamesClass", SyntaxKind.PublicKeyword)
             /* [GeneratedCode, DebuggerNonUserCode]

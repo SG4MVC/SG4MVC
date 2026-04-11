@@ -151,6 +151,22 @@ public class ClassBuilder(String className)
         return this;
     }
 
+    public ClassBuilder WithStringExpressionProperty(String name, String value, params SyntaxKind[] modifiers)
+    {
+        var property = PropertyDeclaration(PredefinedType(Token(SyntaxKind.StringKeyword)), name)
+            .WithExpressionBody(ArrowExpressionClause(
+                LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value))))
+            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+            .WithModifiers(modifiers);
+        if (!IsGenerated)
+        {
+            property = property.WithGeneratedNonUserCodeAttribute();
+        }
+
+        _class = _class.AddMembers(property);
+        return this;
+    }
+
     private FieldDeclarationSyntax CreateFieldInitialised(String name, String type, ExpressionSyntax value, params SyntaxKind[] modifiers)
         => FieldDeclaration(
                 VariableDeclaration(IdentifierName(type))
@@ -166,6 +182,21 @@ public class ClassBuilder(String className)
         var value = ObjectCreationExpression(IdentifierName(valueType))
             .WithArgumentList(ArgumentList());
         var field = CreateFieldInitialised(name, type, value, modifiers);
+        _class = _class.AddMembers(field);
+        return this;
+    }
+
+    public ClassBuilder WithUninitializedObjectField(String name, String declaredType, String concreteType, params SyntaxKind[] modifiers)
+    {
+        var value = InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(Constants.Sg4MvcHelpersClass),
+                    GenericName(Identifier(Constants.Sg4MvcHelpers_CreateUninitializedInstance))
+                        .WithTypeArgumentList(TypeArgumentList(
+                            SingletonSeparatedList<TypeSyntax>(IdentifierName(concreteType))))))
+            .WithArgumentList(ArgumentList());
+        var field = CreateFieldInitialised(name, declaredType, value, modifiers);
         _class = _class.AddMembers(field);
         return this;
     }

@@ -30,5 +30,13 @@
 	<ItemGroup>
 		<AssemblyAttribute Include="Sg4Mvc.GenerateSg4Mvc" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+	  <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.5">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
 
 </Project>

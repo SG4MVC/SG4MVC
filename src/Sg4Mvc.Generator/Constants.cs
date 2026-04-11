@@ -11,6 +11,7 @@ internal static class Constants
 
     internal const String Sg4MvcHelpersClass = "Sg4MvcHelpers";
     internal const String Sg4MvcHelpers_ProcessVirtualPath = "ProcessVirtualPath";
+    internal const String Sg4MvcHelpers_CreateUninitializedInstance = "CreateUninitializedInstance";
 
     private const String ActionResultNamespace = ProjectName + "_Mvc_";
 

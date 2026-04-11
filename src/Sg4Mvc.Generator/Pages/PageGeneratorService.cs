@@ -55,7 +55,7 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
             .ToArray();
         genControllerClass
             //.WithExpressionProperty("Actions", page.Symbol.Name, actionsExpression, SyntaxKind.PublicKeyword)
-            .WithStringField("Name", pageView.PagePath, SyntaxKind.PublicKeyword, SyntaxKind.ReadOnlyKeyword)
+            .WithStringExpressionProperty("Name", pageView.PagePath, SyntaxKind.PublicKeyword)
             .WithStringField("NameConst", pageView.PagePath, SyntaxKind.PublicKeyword, SyntaxKind.ConstKeyword)
             .WithStaticFieldBackedProperty("HandlerNames", "HandlerNamesClass", SyntaxKind.PublicKeyword)
             /* [GeneratedCode, DebuggerNonUserCode]
