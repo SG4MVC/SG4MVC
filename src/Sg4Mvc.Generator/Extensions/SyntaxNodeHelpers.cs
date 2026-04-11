@@ -248,4 +248,52 @@ public static class SyntaxNodeHelpers
             .DefaultIfEmpty(property.Name)
             .First();
     }
+
+    public static String GetControllerArea(this INamedTypeSymbol controllerSymbol)
+    {
+        AttributeData areaAttribute = null;
+
+        var typeSymbol = controllerSymbol;
+        while (typeSymbol != null && areaAttribute == null)
+        {
+            areaAttribute = typeSymbol.GetAttributes()
+                .FirstOrDefault(a => a.AttributeClass.InheritsFrom(FullTypeNames.AreaAttribute));
+
+            typeSymbol = typeSymbol.BaseType;
+        }
+
+        if (areaAttribute == null)
+        {
+            return String.Empty;
+        }
+
+        if (areaAttribute.AttributeClass.ToDisplayString() == FullTypeNames.AreaAttribute)
+        {
+            return areaAttribute.ConstructorArguments[0].Value?.ToString();
+        }
+
+        // parse the constructor to get the area name from derived types
+        if (areaAttribute.AttributeClass.BaseType.ToDisplayString() == FullTypeNames.AreaAttribute)
+        {
+            // direct descendant. Reading the area name from the constructor
+            var constructorInit = areaAttribute.AttributeConstructor.DeclaringSyntaxReferences
+                .SelectMany(s => s.SyntaxTree.GetRoot()
+                    .DescendantNodesAndSelf()
+                    .OfType<ClassDeclarationSyntax>()
+                    .Where(c => c.Identifier.Text == areaAttribute.AttributeClass.Name))
+                .SelectMany(s => s.DescendantNodesAndSelf().OfType<ConstructorInitializerSyntax>())
+                .First();
+
+            if (constructorInit.ArgumentList.Arguments.Count > 0)
+            {
+                var arg = constructorInit.ArgumentList.Arguments[0];
+                if (arg.Expression is LiteralExpressionSyntax litExp)
+                {
+                    return litExp.Token.ValueText;
+                }
+            }
+        }
+
+        return String.Empty;
+    }
 }
