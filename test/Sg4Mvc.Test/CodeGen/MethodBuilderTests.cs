@@ -111,7 +111,7 @@ public class MethodBuilderTests
     public void Method_WithExpressionBody()
     {
         var result = new MethodBuilder("MethodName")
-            .WithExpresisonBody(BodyBuilder.MethodCallExpression("entity", "Method", new Object[0]))
+            .WithExpressionBody(BodyBuilder.MethodCallExpression("entity", "Method", new Object[0]))
             .Build();
 
         Assert.Equal("voidMethodName()=>entity.Method();", result.ToString());

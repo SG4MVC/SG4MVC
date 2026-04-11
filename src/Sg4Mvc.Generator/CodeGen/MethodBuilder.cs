@@ -62,7 +62,7 @@ public class MethodBuilder
         return this;
     }
 
-    public MethodBuilder WithExpresisonBody(ExpressionSyntax bodyExpression)
+    public MethodBuilder WithExpressionBody(ExpressionSyntax bodyExpression)
     {
         _expressionBodySyntax = bodyExpression;
         return this;

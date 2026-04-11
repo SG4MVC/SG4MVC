@@ -58,11 +58,11 @@ public class StaticFileGeneratorService(
             .WithStringField("UrlPath", "~" + path, SyntaxKind.PublicKeyword, SyntaxKind.ConstKeyword)
             .WithMethod("Url", "string", m => m
                 .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword)
-                .WithExpresisonBody(BodyBuilder.MethodCallExpression(Constants.Sg4MvcHelpersClass, Constants.Sg4MvcHelpers_ProcessVirtualPath, new[] { "UrlPath" })))
+                .WithExpressionBody(BodyBuilder.MethodCallExpression(Constants.Sg4MvcHelpersClass, Constants.Sg4MvcHelpers_ProcessVirtualPath, new[] { "UrlPath" })))
             .WithMethod("Url", "string", m => m
                 .WithModifiers(SyntaxKind.PublicKeyword, SyntaxKind.StaticKeyword)
                 .WithParameter("fileName", "string")
-                .WithExpresisonBody(BodyBuilder.MethodCallExpression(Constants.Sg4MvcHelpersClass, Constants.Sg4MvcHelpers_ProcessVirtualPath, new[] { "UrlPath + \"/\" + fileName" })));
+                .WithExpressionBody(BodyBuilder.MethodCallExpression(Constants.Sg4MvcHelpersClass, Constants.Sg4MvcHelpers_ProcessVirtualPath, new[] { "UrlPath + \"/\" + fileName" })));
     }
 
     public static Stopwatch CreatePathsTotal = new();
