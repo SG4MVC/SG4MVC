@@ -51,6 +51,8 @@ public class Generator : IIncrementalGenerator
         AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
         SourceProductionContext context)
     {
+        var settings = new Settings();
+
         var workingDirectory = analyzerConfigOptionsProvider.GetWorkingDirectory();
         Logging.LogDirectory = workingDirectory;
 
@@ -64,11 +66,12 @@ public class Generator : IIncrementalGenerator
             workingDirectory,
             controllers.ToList(),
             pages.ToList(),
-            additionalTexts);
+            additionalTexts,
+            settings);
         Logging.ReportProgress("DataGroupingService.Prep");
 
         // Generate the files
-        var generatorService = GeneratorServiceFactory.Create(context);
+        var generatorService = GeneratorServiceFactory.Create(context, settings);
         generatorService.Generate(workingDirectory, controllerDefinitions, pageViews);
 
         Logging.WriteFile();

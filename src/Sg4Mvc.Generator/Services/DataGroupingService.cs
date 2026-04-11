@@ -16,10 +16,11 @@ public static class DataGroupingService
         String workingDirectory,
         List<ControllerDefinition> controllers,
         List<PageDefinition> pageDefinitions,
-        ImmutableArray<AdditionalText> additionalTexts
+        ImmutableArray<AdditionalText> additionalTexts,
+        Settings settings
     )
     {
-        var (viewLocators, pageViewLocators, staticFileLocators) = LocatorsFactory();
+        var (viewLocators, pageViewLocators, staticFileLocators) = LocatorsFactory(settings);
 
         // De-dupe the controllers by namespace
         controllers = controllers
@@ -130,9 +131,8 @@ public static class DataGroupingService
 
     private static (IViewLocator[] viewLocators,
         IPageViewLocator[] pageViewLocators,
-        IStaticFileLocator[] staticFileLocators) LocatorsFactory()
+        IStaticFileLocator[] staticFileLocators) LocatorsFactory(Settings settings)
     {
-        var settings = new Settings();
         var fileLocator = new PhysicalFileLocator();
 
         IViewLocator[] viewLocators =
