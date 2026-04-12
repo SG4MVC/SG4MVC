@@ -19,12 +19,12 @@
 		<Title>SG4Mvc Generator</Title>
 		<Description>SG4MVC is a tool that generates strongly typed helpers for ASP.NET Core MVC.</Description>
 		<PackageTags>aspnetcore;mvc;r4mvc;sg4mvc;source generator</PackageTags>
-		<VersionPrefix>0.9.6-beta</VersionPrefix>
+		<VersionPrefix>0.9.7-beta</VersionPrefix>
 		<AssemblyVersion Condition="$(BuildNumber) != ''">$(VersionPrefix).$(BuildNumber)</AssemblyVersion>
 		<PackageReleaseNotes>
-			+ Upgrade to .NET 10
-			+ Primary constructor support in controllers
-			+ Upgrade Microsoft.CodeAnalysis.CSharp to 5.3.0
+			+ Fix for constructors issue
+			+ Add [NonController] to generated helper class
+			+ Performance: use compiled Regex in SanitiseFieldName
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

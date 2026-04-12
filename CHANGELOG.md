@@ -1,4 +1,9 @@
 ## SG4MVC Changelog
+- **0.9.7-beta**
+  - Fix for constructors issue
+  - Add [NonController] to generated helper class
+  - Performance: use compiled Regex in SanitiseFieldName
+
 - **0.9.6-beta**
   - Upgrade to .NET 10
   - Primary constructor support in controllers
