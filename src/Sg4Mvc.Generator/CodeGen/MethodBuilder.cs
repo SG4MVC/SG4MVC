@@ -57,6 +57,11 @@ public class MethodBuilder
         {
             parameter = parameter.WithDefault(EqualsValueClause(LiteralExpression(SyntaxKind.NullLiteralExpression)));
         }
+        var isCancellationToken = (type == "System.Threading.CancellationToken");
+        if (isCancellationToken)
+        {
+            parameter = parameter.WithDefault(EqualsValueClause(LiteralExpression(SyntaxKind.DefaultLiteralExpression)));
+        }
 
         _parameters.Add(parameter);
         return this;
