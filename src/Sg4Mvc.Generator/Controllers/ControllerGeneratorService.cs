@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -377,8 +378,11 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
                                 ? new Object[] { "Area", "Name", "ActionNames." + method.Name, SimpleLiteral.String("https") }
                                 : new Object[] { "Area", "Name", "ActionNames." + method.Name }
                         )
-                        .ForEach(method.Parameters, (cb, p) => cb
-                            .MethodCall("ModelUnbinderHelpers", "AddRouteValues", "callInfo.RouteValueDictionary", SimpleLiteral.String(p.GetRouteName()), p.Name))
+                        .ForEach(method.Parameters, (cb, p) =>
+                        {
+                            if(p.Type.ToString() != typeof(CancellationToken).FullName)
+                                cb.MethodCall("ModelUnbinderHelpers", "AddRouteValues", "callInfo.RouteValueDictionary", SimpleLiteral.String(p.GetRouteName()), p.Name);
+                        })
                         .MethodCall(null, method.Name + overrideMethodSuffix, new[] { "callInfo" }.Concat(method.Parameters.Select(p => p.Name)).ToArray())
                         .Statement(rb => isTaskResult
                             ? rb.ReturnMethodCall(typeof(Task).FullName, "FromResult" + (isGenericTaskResult ? "<" + methodReturnType + ">" : null), "callInfo")
