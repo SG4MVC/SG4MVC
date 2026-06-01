@@ -12,7 +12,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Sg4Mvc.Generator.Controllers;
 
-public class ControllerGeneratorService(Settings settings) : IControllerGeneratorService
+public class ControllerGeneratorService(Settings settings, FrameworkMethodNames frameworkMethodNames) : IControllerGeneratorService
 {
     private const String ViewNamesClassName = "_ViewNamesClass";
 
@@ -49,7 +49,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
         var actionsExpression = controller.AreaKey != null
             ? settings.HelpersPrefix + "." + controller.AreaKey + "." + controller.Name
             : settings.HelpersPrefix + "." + controller.Name;
-        var controllerMethods = controller.Symbol.GetPublicNonGeneratedControllerMethods().ToArray();
+        var controllerMethods = controller.Symbol.GetPublicNonGeneratedControllerMethods(frameworkMethodNames).ToArray();
         var controllerMethodNames = controllerMethods.Select(m => m.Name).Distinct().ToArray();
         genControllerClass
             .WithExpressionProperty("Actions", controller.Symbol.Name, actionsExpression, SyntaxKind.PublicKeyword)
@@ -268,7 +268,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
 
     private void AddParameterlessMethods(ClassBuilder genControllerClass, ITypeSymbol mvcSymbol, Boolean isControllerSecure)
     {
-        var methods = mvcSymbol.GetPublicNonGeneratedControllerMethods()
+        var methods = mvcSymbol.GetPublicNonGeneratedControllerMethods(frameworkMethodNames)
             .GroupBy(m => m.Name)
             .Where(g => !g.Any(m => m.Parameters.Length == 0));
         foreach (var method in methods)
@@ -294,7 +294,7 @@ public class ControllerGeneratorService(Settings settings) : IControllerGenerato
     private void AddMethodOverrides(ClassBuilder classBuilder, ITypeSymbol mvcSymbol, Boolean isControllerSecure)
     {
         const String overrideMethodSuffix = "Override";
-        foreach (var method in mvcSymbol.GetPublicNonGeneratedControllerMethods())
+        foreach (var method in mvcSymbol.GetPublicNonGeneratedControllerMethods(frameworkMethodNames))
         {
             var methodReturnType = method.ReturnType;
             var isTaskResult = false;

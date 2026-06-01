@@ -23,7 +23,7 @@ public class Sg4MvcGeneratorServiceTests
     {
         settings ??= new Settings();
 
-        controllerGenerator ??= new ControllerGeneratorService(settings);
+        controllerGenerator ??= new ControllerGeneratorService(settings, new FrameworkMethodNames([], []));
 
         context ??= new SourceProductionContext();
 

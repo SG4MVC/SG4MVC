@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup>
+	<!-- Make .cshtml and wwwroot files visible to the source generator via AdditionalTextsProvider -->
+	<AdditionalFiles Include="**\*.cshtml" />
+	<AdditionalFiles Include="**\wwwroot\**\*" />
+	<AdditionalFiles Include="sg4mvc.json" Condition="Exists('sg4mvc.json')" />
+  </ItemGroup>
+</Project>
