@@ -23,6 +23,7 @@ public class Settings
     public Boolean GeneratePageViewsClass { get; set; } = false;
     public Boolean ShouldSerializeGeneratePageViewsClass() => GeneratePageViewsClass;
 
+    public Boolean RunOnlyOnCondition { get; set; } = false;
     public FeatureFoldersClass FeatureFolders { get; set; } = new();
     public class FeatureFoldersClass
     {

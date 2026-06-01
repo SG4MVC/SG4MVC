@@ -12,7 +12,12 @@
 		                  OutputItemType="Analyzer" 
 		                  ReferenceOutputAssembly="false" />
 	</ItemGroup>
-
+	
+	<ItemGroup>
+		<!-- Only needed while referencing the Sg4Mvc.Generator project, it will be automatically handled when using the NuGet package -->
+		<CompilerVisibleProperty Include="RunSg4Mvc" />
+	</ItemGroup>
+	
 	<PropertyGroup>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>

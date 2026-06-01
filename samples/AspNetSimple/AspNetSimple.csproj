@@ -28,6 +28,11 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
+		<!-- Only needed while referencing the Sg4Mvc.Generator project, it will be automatically handled when using the NuGet package -->
+		<CompilerVisibleProperty Include="RunSg4Mvc" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<AssemblyAttribute Include="Sg4Mvc.GenerateSg4Mvc" />
 	</ItemGroup>
 	

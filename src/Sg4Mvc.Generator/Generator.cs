@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -51,13 +54,21 @@ public class Generator : IIncrementalGenerator
         AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
         SourceProductionContext context)
     {
-        var settings = new Settings();
-
+        Logging.ReportProgress("GetWorkingDirectory");
         var workingDirectory = analyzerConfigOptionsProvider.GetWorkingDirectory();
+
         Logging.LogDirectory = workingDirectory;
 
-        Logging.ReportProgress("GetWorkingDirectory");
+        var settings = LoadConfigurationFile(workingDirectory);
 
+        analyzerConfigOptionsProvider.GlobalOptions.TryGetValue("build_property.RunSg4Mvc", out var runSg4Mvc);
+
+
+        if(settings.RunOnlyOnCondition && runSg4Mvc.Equals("true", StringComparison.OrdinalIgnoreCase) == false)
+        {
+            return;
+        }
+      
         // Prep the project Compilation object, and process the Controller public methods list
         SyntaxNodeHelpers.PopulateControllerClassMethodNames(compilation);
         Logging.ReportProgress("PopulateControllerClassMethodNames");
@@ -75,5 +86,19 @@ public class Generator : IIncrementalGenerator
         generatorService.Generate(workingDirectory, controllerDefinitions, pageViews);
 
         Logging.WriteFile();
+    }
+    static Settings LoadConfigurationFile(System.String workingDirectory)
+    {
+        var settings = new Settings();
+        var cfgFileName = "sg4mvc.json";
+
+        var cfgFile = Path.Combine(workingDirectory, cfgFileName);
+        try
+        {
+            var json = File.ReadAllText(cfgFile);
+            return System.Text.Json.JsonSerializer.Deserialize<Settings>(json) ?? settings;
+        }
+        catch { }
+        return settings;
     }
 }
