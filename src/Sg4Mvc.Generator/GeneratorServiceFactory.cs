@@ -8,9 +8,9 @@ namespace Sg4Mvc.Generator;
 
 public static class GeneratorServiceFactory
 {
-    public static Sg4MvcGeneratorService Create(SourceProductionContext context, Settings settings)
+    public static Sg4MvcGeneratorService Create(SourceProductionContext context, Settings settings, FrameworkMethodNames frameworkMethodNames)
     {
-        var controllerGeneratorService = new ControllerGeneratorService(settings);
+        var controllerGeneratorService = new ControllerGeneratorService(settings, frameworkMethodNames);
 
         var fileLocator = new PhysicalFileLocator();
 
@@ -18,7 +18,7 @@ public static class GeneratorServiceFactory
 
         return new Sg4MvcGeneratorService(
             controllerGeneratorService,
-            new PageGeneratorService(settings),
+            new PageGeneratorService(settings, frameworkMethodNames),
             new StaticFileGeneratorService(staticFileLocator, settings),
             settings,
             context);

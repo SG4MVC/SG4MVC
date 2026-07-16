@@ -79,94 +79,75 @@ public static class SyntaxNodeHelpers
                 || a.AttributeClass.Name == "Sg4MvcExclude");
     }
 
-    private static String[] _controllerClassMethodNames = null;
-    private static String[] _pageClassMethodNames = null;
-
-    public static void PopulateControllerClassMethodNames(Compilation compilation)
+    public static FrameworkMethodNames GetFrameworkMethodNames(Compilation compilation)
     {
-        List<String> result = [];
-        var typeSymbol = compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controller");
-        while (typeSymbol != null)
+        static String[] ExtractVirtualPublicMethods(INamedTypeSymbol typeSymbol)
         {
-            var methodNames = typeSymbol.GetMembers()
-                .Where(r => r.Kind == SymbolKind.Method
-                    && r.DeclaredAccessibility == Accessibility.Public
-                    && r.IsVirtual)
-                .Select(s => s.Name);
-            result.AddRange(methodNames);
-            typeSymbol = typeSymbol.BaseType;
+            List<String> result = [];
+            while (typeSymbol != null)
+            {
+                result.AddRange(typeSymbol.GetMembers()
+                    .Where(r => r.Kind == SymbolKind.Method
+                        && r.DeclaredAccessibility == Accessibility.Public
+                        && r.IsVirtual)
+                    .Select(s => s.Name));
+                typeSymbol = typeSymbol.BaseType;
+            }
+            return result.Distinct().ToArray();
         }
-        _controllerClassMethodNames = result.Distinct().ToArray();
 
-        result = [];
-        typeSymbol = compilation.GetTypeByMetadataName(FullTypeNames.PageModel);
-        while (typeSymbol != null)
-        {
-            var methodNames = typeSymbol.GetMembers()
-                .Where(r => r.Kind == SymbolKind.Method
-                    && r.DeclaredAccessibility == Accessibility.Public
-                    && r.IsVirtual)
-                .Select(s => s.Name);
-            result.AddRange(methodNames);
-            typeSymbol = typeSymbol.BaseType;
-        }
-        _pageClassMethodNames = result.Distinct().ToArray();
+        var controllerType = compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controller");
+        var pageType = compilation.GetTypeByMetadataName(FullTypeNames.PageModel);
+
+        return new FrameworkMethodNames(
+            ExtractVirtualPublicMethods(controllerType),
+            ExtractVirtualPublicMethods(pageType));
     }
 
-    public static Boolean IsMvcAction(this IMethodSymbol method)
+    public static Boolean IsMvcAction(this IMethodSymbol method, FrameworkMethodNames names)
     {
         if (method.GetAttributes().Any(a => a.AttributeClass.InheritsFrom(FullTypeNames.NonActionAttribute)))
-        {
             return false;
-        }
 
-        if (_controllerClassMethodNames.Contains(method.Name))
-        {
+        if (names.ControllerMethods.Contains(method.Name))
             return false;
-        }
 
         return true;
     }
 
-    public static Boolean IsRazorPageAction(this IMethodSymbol method)
+    public static Boolean IsRazorPageAction(this IMethodSymbol method, FrameworkMethodNames names)
     {
         if (method.GetAttributes().Any(a => a.AttributeClass.InheritsFrom(FullTypeNames.NonActionAttribute)))
-        {
             return false;
-        }
 
-        if (_pageClassMethodNames.Contains(method.Name))
-        {
+        if (names.PageMethods.Contains(method.Name))
             return false;
-        }
 
         if (!method.Name.StartsWith("On"))
-        {
             return false;
-        }
 
         return true;
     }
 
-    public static List<IMethodSymbol> GetPublicNonGeneratedControllerMethods(this ITypeSymbol controller)
+    public static List<IMethodSymbol> GetPublicNonGeneratedControllerMethods(this ITypeSymbol controller, FrameworkMethodNames names)
     {
         return controller.GetMembers()
             .OfType<IMethodSymbol>()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.MethodKind == MethodKind.Ordinary)
             .Where(IsNotSg4MvcGenerated)
             .Where(IsNotSg4MvcExcluded)
-            .Where(IsMvcAction)
+            .Where(m => m.IsMvcAction(names))
             .ToList();
     }
 
-    public static List<IMethodSymbol> GetPublicNonGeneratedPageMethods(this ITypeSymbol controller)
+    public static List<IMethodSymbol> GetPublicNonGeneratedPageMethods(this ITypeSymbol controller, FrameworkMethodNames names)
     {
         return controller.GetMembers()
             .OfType<IMethodSymbol>()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.MethodKind == MethodKind.Ordinary)
             .Where(IsNotSg4MvcGenerated)
             .Where(IsNotSg4MvcExcluded)
-            .Where(IsRazorPageAction)
+            .Where(m => m.IsRazorPageAction(names))
             .ToList();
     }
 

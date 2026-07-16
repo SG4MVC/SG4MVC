@@ -12,7 +12,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Sg4Mvc.Generator.Pages;
 
-public class PageGeneratorService(Settings settings) : IPageGeneratorService
+public class PageGeneratorService(Settings settings, FrameworkMethodNames frameworkMethodNames) : IPageGeneratorService
 {
     private const String ViewNamesClassName = "_ViewNamesClass";
 
@@ -47,7 +47,7 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
         AddParameterlessMethods(genControllerClass, page.Symbol, page.IsSecure);
 
         //var actionsExpression = _settings.HelpersPrefix + "." + page.Name;
-        var handlerMethods = SyntaxNodeHelpers.GetPublicNonGeneratedPageMethods(page.Symbol).ToArray();
+        var handlerMethods = SyntaxNodeHelpers.GetPublicNonGeneratedPageMethods(page.Symbol, frameworkMethodNames).ToArray();
         var handlerNames = handlerMethods.Select(m => m.Name)
             .Select(GetHandler)
             .Where(n => !String.IsNullOrWhiteSpace(n))
@@ -316,7 +316,7 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
 
     private void AddParameterlessMethods(ClassBuilder genControllerClass, ITypeSymbol mvcSymbol, Boolean isControllerSecure)
     {
-        var methods = mvcSymbol.GetPublicNonGeneratedControllerMethods()
+        var methods = mvcSymbol.GetPublicNonGeneratedControllerMethods(frameworkMethodNames)
             .GroupBy(m => m.Name)
             .Where(g => !g.Any(m => m.Parameters.Length == 0));
         foreach (var method in methods)
@@ -354,7 +354,7 @@ public class PageGeneratorService(Settings settings) : IPageGeneratorService
     private void AddMethodOverrides(ClassBuilder classBuilder, ITypeSymbol mvcSymbol, Boolean isControllerSecure)
     {
         const String overrideMethodSuffix = "Override";
-        foreach (var method in mvcSymbol.GetPublicNonGeneratedControllerMethods())
+        foreach (var method in mvcSymbol.GetPublicNonGeneratedControllerMethods(frameworkMethodNames))
         {
             var methodReturnType = method.ReturnType;
             Boolean isTaskResult = false, isGenericTaskResult = false;
